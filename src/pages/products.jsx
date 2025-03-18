@@ -60,7 +60,7 @@ const Products = () => {
             formData.append("category_id", newFood.category_id);
             if (newFood.image) formData.append("image", newFood.image);
     
-            const response = await axios.post("http://127.0.0.1:8000/api/create", formData, {
+            const response = await axios.post("http://127.0.0.1:8000/api/foods/create", formData, {
                 headers: { "Content-Type": "multipart/form-data" }
             });
     
@@ -154,7 +154,7 @@ const Products = () => {
                         </form>
                         <div className="modal-action">
                             <button className="btn mx-2" onClick={() => document.getElementById("add_new_product").close()}>Close</button>
-                            <button className="btn btn-warning">Save</button>
+                            <button className="btn btn-warning" onClick={addFood}>Save</button>
                         </div>
                     </div>
                 </dialog>
