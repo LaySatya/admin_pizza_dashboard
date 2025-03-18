@@ -16,6 +16,10 @@ const Products = () => {
         image: null
     });
 
+    //added this because we are working with modal, we need to pass the food id to the modal
+    const [foodIdToDelete, setFoodIdToDelete] = useState(null);
+
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -85,6 +89,18 @@ const Products = () => {
             toast.error("Failed to add product. Check the form data!");
         }
     };
+
+    const deleteFood = async (id) => {
+        try {
+            await axios.delete(`http://127.0.0.1:8000/api/foods/delete/${id}`);
+            toast.success("Product deleted successfully!");
+            fetchData();
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to delete product.");
+        }
+    };
+    
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
@@ -197,7 +213,11 @@ const Products = () => {
                                         <td>
                                             <button
                                                 className="btn btn-error mx-1 btn-sm text-white"
-                                                onClick={() => document.getElementById('delete_product').showModal()}
+                                                onClick={()=>{
+                                                    setFoodIdToDelete(food.id);
+                                                    document.getElementById('delete_product').showModal()
+                                                }
+                                                }
                                             >
                                                 <Trash height={17} />
                                             </button>
@@ -213,8 +233,13 @@ const Products = () => {
                                                     <div className="modal-action">
                                                         <form method="dialog">
                                                             <button className="btn">Close</button>
-                                                            <button className="btn btn-error mx-1 text-white">
-                                                                <Trash height={17} />
+                                                            <button className="btn btn-error mx-1 text-white" 
+                                                                onClick={() => {
+                                                                    deleteFood(foodIdToDelete);
+                                                                    document.getElementById('delete_product').close();
+                                                                }}
+                                                            >
+                                                                <Trash height={17} /> 
                                                             </button>
                                                         </form>
                                                     </div>
