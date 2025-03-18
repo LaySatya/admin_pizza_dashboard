@@ -22,7 +22,7 @@ const Products = () => {
                 // Fetch foods and categories in parallel
                 const [foodRes, categoryRes] = await Promise.all([
                     axios.get("http://127.0.0.1:8000/api/foods/getAllFoods"),
-                    axios.get("http://127.0.0.1:8000/api/categories/index"),
+                    axios.get("http://127.0.0.1:8000/api/categories"),
                 ]);
 
                 const foodData = foodRes.data.data;

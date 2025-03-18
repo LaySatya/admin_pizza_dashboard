@@ -35,7 +35,7 @@ const Dashboard = () => {
             // fetch amount of foods or products
             const fetchFoods = async () => {
                 try {
-                    const response = await axios.get("http://127.0.0.1:8000/api/getAllFoods");
+                    const response = await axios.get("http://127.0.0.1:8000/api/foods/getAllFoods");
                     setAmountFoods(response.data.data);
                 } catch (err) {
                     setError(err.message);
