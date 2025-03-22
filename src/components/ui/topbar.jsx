@@ -1,4 +1,5 @@
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { FaBell } from "react-icons/fa";
 import { MdKeyboardArrowDown } from "react-icons/md";
 
@@ -11,6 +12,41 @@ const deliveries = new Array(6).fill({
 const TopBar = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");      // Remove authentication token
+    localStorage.removeItem("isLoggedIn"); // Mark user as logged out
+    localStorage.removeItem("user_id");
+    
+    window.location.href = "/"; // Redirect to login page
+  };
+
+const [profileImg, setProfileImg] = useState("");
+
+useEffect(() => {
+  const fetchProfile = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("user_id"); // Store user ID after login
+
+      if (!userId) {
+        console.error("User ID not found");
+        return;
+      }
+
+      const response = await axios.get(`http://127.0.0.1:8000/api/users/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setProfileImg(response.data.profile_img || "https://via.placeholder.com/150");
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+    }
+  };
+
+  fetchProfile();
+}, []);
+
 
   return (
     <div className="w-full h-16 bg-white flex justify-between items-center shadow shadow-sm px-6 relative">
@@ -59,7 +95,7 @@ const TopBar = () => {
             onClick={() => setShowProfileDropdown(!showProfileDropdown)}
           >
             <img
-              src="https://randomuser.me/api/portraits/men/32.jpg"
+              src={profileImg}
               alt="User"
               className="w-10 h-10 rounded-full object-cover"
             />
@@ -71,9 +107,12 @@ const TopBar = () => {
               <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                 Profile
               </a>
-              <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+              <button 
+                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                onClick={handleLogout} // Call logout function
+              >
                 Logout
-              </a>
+              </button>
             </div>
           )}
         </div>

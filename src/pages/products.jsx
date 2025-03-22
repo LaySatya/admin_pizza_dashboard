@@ -18,15 +18,23 @@ const Products = () => {
 
     //added this because we are working with modal, we need to pass the food id to the modal
     const [foodIdToDelete, setFoodIdToDelete] = useState(null);
-
+    const token = localStorage.getItem("token");
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 // Fetch foods and categories in parallel
                 const [foodRes, categoryRes] = await Promise.all([
-                    axios.get("http://127.0.0.1:8000/api/foods/getAllFoods"),
-                    axios.get("http://127.0.0.1:8000/api/categories"),
+                    axios.get("http://127.0.0.1:8000/api/foods/getAllFoods", {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }),
+                    axios.get("http://127.0.0.1:8000/api/categories", {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }),
                 ]);
 
                 const foodData = foodRes.data.data;

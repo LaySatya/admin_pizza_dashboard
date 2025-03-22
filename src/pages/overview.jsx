@@ -11,16 +11,16 @@ const Dashboard = () => {
     const [error, setError] = useState(null);
     useEffect(() => {
             // fetch amount of orders 
-            const fetchAmountOfOrders = async () => {
-                try {
-                    const response = await axios.get("http://127.0.0.1:8000/api/orderTotalAmount");
-                    setAmountOrders(response.data.data);
-                } catch (err) {
-                    setError(err.message);
-                } finally {
-                    setLoading(false);
-                }
-            };
+            // const fetchAmountOfOrders = async () => {
+            //     try {
+            //         const response = await axios.get("http://127.0.0.1:8000/api/orders/fetch-my-orders");
+            //         setAmountOrders(response.data.data);
+            //     } catch (err) {
+            //         setError(err.message);
+            //     } finally {
+            //         setLoading(false);
+            //     }
+            // };
             // fetch amount of categories
             const fetchCategories = async () => {
                 try {
@@ -35,7 +35,7 @@ const Dashboard = () => {
             // fetch amount of foods or products
             const fetchFoods = async () => {
                 try {
-                    const response = await axios.get("http://127.0.0.1:8000/api/foods/getAllFoods");
+                    const response = await axios.get("http://127.0.0.1:8000/api/foods");
                     setAmountFoods(response.data.data);
                 } catch (err) {
                     setError(err.message);
@@ -47,7 +47,7 @@ const Dashboard = () => {
         
             fetchFoods();
             fetchCategories();
-            fetchAmountOfOrders();
+            // fetchAmountOfOrders();
         }, []);
     
         if (loading) return <p>Loading...</p>;
