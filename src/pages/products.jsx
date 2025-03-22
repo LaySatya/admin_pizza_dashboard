@@ -15,17 +15,25 @@ const Products = () => {
         category_id: "",
         image: null
     });
-
+    const [foodToEdit, setFoodToEdit] = useState({
+        id: null,
+        name: "",
+        description: "",
+        price: "",
+        category_id: "",
+        image: null
+    });
+    
     //added this because we are working with modal, we need to pass the food id to the modal
     const [foodIdToDelete, setFoodIdToDelete] = useState(null);
     const token = localStorage.getItem("token");
 
-    useEffect(() => {
+    useEffect(() => {   
         const fetchData = async () => {
             try {
                 // Fetch foods and categories in parallel
                 const [foodRes, categoryRes] = await Promise.all([
-                    axios.get("http://127.0.0.1:8000/api/foods/getAllFoods", {
+                    axios.get("http://127.0.0.1:8000/api/foods/fetchAllFoods", {
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },
@@ -73,13 +81,14 @@ const Products = () => {
             if (newFood.image) formData.append("image", newFood.image);
     
             const response = await axios.post("http://127.0.0.1:8000/api/foods/create", formData, {
-                headers: { "Content-Type": "multipart/form-data" }
+                headers: { 
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${token}`,
+                }
             });
     
             if (response.status === 201 || response.status === 200) {
                 toast.success("Product added successfully!");
-                // Refresh product list
-                await fetchData();
                 document.getElementById("add_new_product").close();
                 // Reset newFood state
                 setNewFood({
@@ -89,20 +98,80 @@ const Products = () => {
                     category_id: "",
                     image: null
                 });
+                
+                setFoods(foods => [...foods, response.data.data]);
             } else {
-                throw new Error("Unexpected response from server");
+                // throw new Error("Unexpected response from server");
+                console.log("Unexpected response:", response);
             }
         } catch (error) {
-            console.error(error);
+            console.log(error);
             toast.error("Failed to add product. Check the form data!");
         }
     };
 
+    const editFood = async () => {
+        try {
+            if (!foodToEdit.name || !foodToEdit.description || !foodToEdit.price || !foodToEdit.category_id) {
+                toast.error("All fields are required!");
+                return;
+            }
+    
+            const formData = new FormData();
+            formData.append("name", foodToEdit.name);
+            formData.append("description", foodToEdit.description);
+            formData.append("price", foodToEdit.price);
+            formData.append("category_id", foodToEdit.category_id);
+            if (foodToEdit.image) formData.append("image", foodToEdit.image);
+    
+            const response = await axios.post(`http://127.0.0.1:8000/api/foods/update/${foodToEdit.id}`, formData, {
+                headers: { 
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+    
+            if (response.status === 200) {
+                toast.success("Product updated successfully!");
+                document.getElementById("edit_product").close();
+                setFoods(foods.map(food => food.id === foodToEdit.id ? response.data.data : food));
+                setFoodToEdit({
+                    id: null,
+                    name: "",
+                    description: "",
+                    price: "",
+                    category_id: "",
+                    image: null
+                });
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error("Failed to update product.");
+        }
+    };
+
+    const handleEditClick = (food) => {
+        setFoodToEdit({
+            id: food.id,
+            name: food.name,
+            description: food.description,
+            price: food.price,
+            category_id: food.category_id,
+            image: null, // This will be handled separately if you want to change the image
+        });
+        document.getElementById("edit_product").showModal(); // Show the edit modal
+    };
+
     const deleteFood = async (id) => {
         try {
-            await axios.delete(`http://127.0.0.1:8000/api/foods/delete/${id}`);
+            await axios.delete(`http://127.0.0.1:8000/api/foods/delete/${id}`,{
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            // await fetchData();
+            setFoods(foods.filter(food => food.id !== id));
             toast.success("Product deleted successfully!");
-            fetchData();
         } catch (error) {
             console.error(error);
             toast.error("Failed to delete product.");
@@ -126,7 +195,10 @@ const Products = () => {
                 <dialog id="add_new_product" className="modal">
                     <div className="modal-box">
                         <h3 className="font-bold text-lg">Add Product</h3>
-                        <form onSubmit={(e) => { e.preventDefault(); addFood(); }}>
+                        <form onSubmit={(e) => { 
+                            e.preventDefault(); 
+                            addFood(); 
+                        }}>
                             <div className="mt-5">
                                 <input 
                                     type="text" 
@@ -178,7 +250,7 @@ const Products = () => {
                         </form>
                         <div className="modal-action">
                             <button className="btn mx-2" onClick={() => document.getElementById("add_new_product").close()}>Close</button>
-                            <button className="btn btn-warning" onClick={addFood}>Save</button>
+                            <button className="btn btn-warning" onClick={addFood} type="submit">Save</button>
                         </div>
                     </div>
                 </dialog>
@@ -217,7 +289,7 @@ const Products = () => {
                                                 />
                                             )}
                                         </td>
-                                        <td>{food.category.name}</td>
+                                        <td>{food.category_id}</td>
                                         <td>
                                             <button
                                                 className="btn btn-error mx-1 btn-sm text-white"
@@ -253,63 +325,78 @@ const Products = () => {
                                                     </div>
                                                 </div>
                                             </dialog>
-                                             {/* add product button */}
+
+                                             {/* edit product button */}
                                              <button
                                                     className="btn btn-info btn-sm text-white"
-                                                    onClick={() => document.getElementById("edit_product").showModal()}
+                                                    onClick={() => handleEditClick(food)}
                                                 >
                                                     <Edit height={17} />
                                                 </button>
                                                 {/* edit product dialog */}
                                                 <dialog id="edit_product" className="modal">
-                                                    <div className="modal-box">
-                                                        <h3 className="font-bold text-lg">Edit Product</h3>
-                                                        <form action="">
-                                                            <div className="mt-5">
-                                                                <label className="floating-label">
-                                                                    <input type="text" placeholder="Product name" className="input input-md w-full" />
-                                                                    <span className="text-black">Product name</span>
-                                                                </label>
-                                                            </div>
-                                                            <div className="mt-5">
-                                                                <label className="floating-label">
-                                                                    <input type="text" placeholder="Description" className="input input-md w-full" />
-                                                                    <span className="text-black">Description</span>
-                                                                </label>
-                                                            </div>
-                                                            <div className="mt-5">
-                                                                <label className="floating-label">
-                                                                    <input type="text" placeholder="Price" className="input input-md w-full" />
-                                                                    <span className="text-black">Price</span>
-                                                                </label>
-                                                            </div>
-                                                            <div className="mt-5">
-                                                                <label className="floating-label">
-                                                                    <select defaultValue="Pick a category" className="select select-md w-full">
-                                                                        <option disabled={true}>Choose category</option>
-                                                                        <option>Pizza1</option>
-                                                                        <option>Pizza2</option>
-                                                                        <option>Pizza3</option>
-                                                                    </select>
-                                                                    {/* <span className="text-black">Category</span> */}
-                                                                </label>
-                                                            </div>
-                                                            <div className="mt-5">
-                                                                <label className="floating-label">
-                                                                    <input type="file" className="file-input file-input-md" />
-                                                                </label>
-                                                            </div>
-
-                                                        </form>
-                                                        <div className="modal-action">
-                                                            <form method="dialog">
-                                                                {/* if there is a button, it will close the modal */}
-                                                                <button className="btn mx-2">Close</button>
-                                                                <button className="btn btn-warning"><Save height={15} /> Edit</button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </dialog>
+    <div className="modal-box">
+        <h3 className="font-bold text-lg">Edit Product</h3>
+        <form onSubmit={(e) => {
+            e.preventDefault();
+            editFood(); // Trigger the edit function on form submit
+        }}>
+            <div className="mt-5">
+                <input
+                    type="text"
+                    placeholder="Product name"
+                    className="input input-md w-full"
+                    value={foodToEdit.name}
+                    onChange={(e) => setFoodToEdit({ ...foodToEdit, name: e.target.value })}
+                />
+            </div>
+            <div className="mt-5">
+                <input
+                    type="text"
+                    placeholder="Description"
+                    className="input input-md w-full"
+                    value={foodToEdit.description}
+                    onChange={(e) => setFoodToEdit({ ...foodToEdit, description: e.target.value })}
+                />
+            </div>
+            <div className="mt-5">
+                <input
+                    type="text"
+                    placeholder="Price"
+                    className="input input-md w-full"
+                    value={foodToEdit.price}
+                    onChange={(e) => setFoodToEdit({ ...foodToEdit, price: e.target.value })}
+                />
+            </div>
+            <div className="mt-5">
+                <select
+                    className="select select-md w-full"
+                    value={foodToEdit.category_id}
+                    onChange={(e) => setFoodToEdit({ ...foodToEdit, category_id: e.target.value })}
+                >
+                    <option disabled>Choose category</option>
+                    {categories.map(category => (
+                        <option key={category.id} value={category.id}>
+                            {category.name}
+                        </option>
+                    ))}
+                </select>
+            </div>
+            <div className="mt-5">
+                <input 
+                    type="file" 
+                    className="file-input file-input-md" 
+                    onChange={e => setFoodToEdit({ ...foodToEdit, image: e.target.files[0] })}
+                />
+            </div>
+        </form>
+        <div className="modal-action">
+            <button className="btn mx-2" onClick={() => document.getElementById("edit_product").close()}>Close</button>
+            <button className="btn btn-warning" onClick={editFood} type="submit">Save</button>
+        </div>
+    </div>
+</dialog>
+    
                                         </td>
                                     </tr>
                                 ))
