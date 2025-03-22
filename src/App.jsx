@@ -9,6 +9,7 @@ import Orders from "./pages/orders";
 import Dashboard from "./pages/overview";
 import Products from "./pages/products";
 import Login from "./pages/login"; // Import the Login component
+import Users from "./pages/users";
 
 function App() {
     const [selectedPage, setSelectedPage] = useState("overview");
@@ -30,6 +31,8 @@ function App() {
                 return <Products />;
             case "categories":
                 return <Categories />;
+            case "users":
+                return <Users />
             case "deliveries":
                 return <Deliveries />;
             default:
