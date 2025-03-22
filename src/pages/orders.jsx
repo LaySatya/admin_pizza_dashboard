@@ -4,16 +4,27 @@ import { useEffect, useState } from "react";
 import { BiDetail } from "react-icons/bi";
 
 const Orders = () => {
+    // orders data
     const [orders, setOrders] = useState([]);
+    // loading state
     const [loading, setLoading] = useState(true);
+    // error state
     const [error, setError] = useState(null);
-    const [alertMessage, setAlertMessage] = useState(""); // State for alert
+    // alert message state
+    const [alertMessage, setAlertMessage] = useState(""); 
+    // message toggle status
     const [messageStatus, setMessageStatus] = useState(false);
+    // get user token from api 
+    const token = localStorage.getItem('token');
 
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axios.get("http://127.0.0.1:8000/api/orders");
+                const response = await axios.get("http://127.0.0.1:8000/api/orders", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
                 setOrders(response.data.data);
             } catch (err) {
                 setError(err.message);

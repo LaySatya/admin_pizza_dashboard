@@ -4,23 +4,36 @@ import { useEffect, useState } from "react";
 import { FaProductHunt } from "react-icons/fa6";
 
 const Dashboard = () => {
+    // amount of orders
     const [amountOrders, setAmountOrders] = useState();
+    // amount of categories
     const [amountCategories, setAmountCategories] = useState([]);
+    // amout of foods
     const [amountFoods, setAmountFoods] = useState([]);
+    // loading state
     const [loading, setLoading] = useState(true);
+    // error state
     const [error, setError] = useState(null);
+    // get user login token
+    const token = localStorage.getItem("token");
+
     useEffect(() => {
             // fetch amount of orders 
-            // const fetchAmountOfOrders = async () => {
-            //     try {
-            //         const response = await axios.get("http://127.0.0.1:8000/api/orders/fetch-my-orders");
-            //         setAmountOrders(response.data.data);
-            //     } catch (err) {
-            //         setError(err.message);
-            //     } finally {
-            //         setLoading(false);
-            //     }
-            // };
+            const fetchAmountOfOrders = async () => {
+                try {
+                    const response = await axios.get("http://127.0.0.1:8000/api/orders/",{
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                    setAmountOrders(response.data.data.length);
+                } catch (err) {
+                    setError(err.message);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
             // fetch amount of categories
             const fetchCategories = async () => {
                 try {
@@ -32,10 +45,15 @@ const Dashboard = () => {
                     setLoading(false);
                 }
             };
+            
             // fetch amount of foods or products
             const fetchFoods = async () => {
                 try {
-                    const response = await axios.get("http://127.0.0.1:8000/api/foods");
+                    const response = await axios.get("http://127.0.0.1:8000/api/foods/getAllFoods", {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
                     setAmountFoods(response.data.data);
                 } catch (err) {
                     setError(err.message);
@@ -47,7 +65,7 @@ const Dashboard = () => {
         
             fetchFoods();
             fetchCategories();
-            // fetchAmountOfOrders();
+            fetchAmountOfOrders();
         }, []);
     
         if (loading) return <p>Loading...</p>;
