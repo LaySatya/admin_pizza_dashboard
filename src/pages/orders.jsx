@@ -1,5 +1,4 @@
 import axios from "axios";
-import { Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { BiDetail } from "react-icons/bi";
 
@@ -11,16 +10,18 @@ const Orders = () => {
     // error state
     const [error, setError] = useState(null);
     // alert message state
-    const [alertMessage, setAlertMessage] = useState(""); 
+    // const [alertMessage, setAlertMessage] = useState(""); 
     // message toggle status
-    const [messageStatus, setMessageStatus] = useState(false);
+    // const [messageStatus, setMessageStatus] = useState(false);
     // get user token from api 
     const token = localStorage.getItem('token');
 
+    // fetch orders
     useEffect(() => {
+        // fetch all orders
         const fetchOrders = async () => {
             try {
-                const response = await axios.get("http://127.0.0.1:8000/api/orders", {
+                const response = await axios.get("http://127.0.0.1:8000/api/orders/get-order-details", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -41,17 +42,17 @@ const Orders = () => {
 
     // Function to handle adding a new category
 
-
-    const deleteOrder = async (id) => {
-        try {
-            await axios.delete(`http://127.0.0.1:8000/api/orders/${id}`);
-            setOrders(orders.filter(order => order.id !== id));
-            setAlertMessage("Order deleted successfully.");
-            setMessageStatus(true);
-        } catch (error) {
-            setAlertMessage("Failed to delete order!");
-        }
-    };
+    // delete order
+    // const deleteOrder = async (id) => {
+    //     try {
+    //         await axios.delete(`http://127.0.0.1:8000/api/orders/${id}`);
+    //         setOrders(orders.filter(order => order.id !== id));
+    //         setAlertMessage("Order deleted successfully.");
+    //         setMessageStatus(true);
+    //     } catch (error) {
+    //         setAlertMessage("Failed to delete order!");
+    //     }
+    // };
 
     const orderStatus = (status) => {
         switch (status) {
@@ -71,11 +72,11 @@ const Orders = () => {
     return (
         <>
             {/* Alert Message */}
-            {alertMessage && (
+            {/* {alertMessage && (
                 <div role="alert" className={messageStatus ? "alert alert-success alert-outline mt-4" : "alert alert-error alert-outline mt-4"}>
                     <span>{alertMessage}</span>
                 </div>
-            )}
+            )} */}
 
             <div className="flex justify-between mt-5">
                 <h2 className="text-xl font-bold">📦 Orders</h2>
@@ -132,28 +133,7 @@ const Orders = () => {
                                                 </dialog>
                                             </td>
                                             <td>
-                                                {/* Delete category button */}
-                                                <button className="btn btn-error mx-1 btn-sm text-white"
-                                                    onClick={() => document.getElementById(`delete_category${order.id}`).showModal()}>
-                                                    <Trash height={17} />
-                                                </button>
-
-                                                {/* Delete order dialog */}
-                                                <dialog id={`delete_order${order.id}`} className="modal">
-                                                    <div className="modal-box">
-                                                        <h3 className="font-bold text-lg">Delete order</h3>
-                                                        <p className="py-4 text-[16px]">Are you sure?</p>
-                                                        <div className="modal-action">
-                                                            <button className="btn" onClick={() => document.getElementById(`delete_order${order.id}`).close()}>
-                                                                Close
-                                                            </button>
-                                                            <button className="btn btn-error mx-1 text-white" onClick={() => deleteOrder(order.id)}>
-                                                                <Trash height={17} />
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </dialog>
-
+                                               
 
                                             </td>
                                         </tr>

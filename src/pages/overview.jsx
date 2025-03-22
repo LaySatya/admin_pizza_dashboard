@@ -45,7 +45,7 @@ const Dashboard = () => {
                     setLoading(false);
                 }
             };
-            
+
             // fetch amount of foods or products
             const fetchFoods = async () => {
                 try {
@@ -144,7 +144,7 @@ const Dashboard = () => {
                         </div>
                     </div>
                 </div>
-                <div className="card bg-base-100 card-sm shadow-sm">
+                {/* <div className="card bg-base-100 card-sm shadow-sm">
                     <div className="card-body">
                         <h2 className="card-title text-2xl">200</h2>
                         <div className="flex justify-between">
@@ -157,7 +157,7 @@ const Dashboard = () => {
                             <button className="btn btn-outline btn-warning btn-sm border-gray-100">View All</button>
                         </div>
                     </div>
-                </div>
+                </div> */}
 
             </div>
         </>
