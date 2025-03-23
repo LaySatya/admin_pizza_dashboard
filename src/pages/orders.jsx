@@ -21,7 +21,7 @@ const Orders = () => {
         // fetch all orders
         const fetchOrders = async () => {
             try {
-                const response = await axios.get("http://127.0.0.1:8000/api/orders/get-order-details", {
+                const response = await axios.get("http://127.0.0.1:8000/api/orders", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -90,6 +90,7 @@ const Orders = () => {
                         <thead>
                             <tr>
                                 <th>Order number</th>
+                                <th>Food</th>
                                 <th>Customer</th>
                                 <th>Quantity</th>
                                 <th>Status</th>
@@ -106,6 +107,7 @@ const Orders = () => {
                                     orders.map((order) => (
                                         <tr key={order.id}>
                                             <td>{order.order_number}</td>
+                                            <td></td>
                                             <td>{order.customer_id}</td>
                                             <td>{order.quantity}</td>
                                             <td>{orderStatus(order.status)}</td>

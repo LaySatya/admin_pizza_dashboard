@@ -3,22 +3,14 @@ import { Edit, Plus, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const Categories = () => {
-    // state for storing categories data to retrieve
     const [categories, setCategories] = useState([]);
-    // state for loading
     const [loading, setLoading] = useState(true);
-    // state for error
     const [error, setError] = useState(null);
-    // state for new category
-    const [newCategory, setNewCategory] = useState(""); 
-    // state for get data categories for update 
+    const [newCategory, setNewCategory] = useState(""); // State for new category
     const [editCategory, setEditCategory] = useState({ id: null, name: "" });
-    // state for alert message
-    const [alertMessage, setAlertMessage] = useState(""); 
-    // state for toggle messsage status
+    const [alertMessage, setAlertMessage] = useState(""); // State for alert
     const [messageStatus, setMessageStatus] = useState(false);
 
-    // get all categories
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -37,13 +29,14 @@ const Categories = () => {
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
 
-    // add new cateogies funciton
+    // Function to handle adding a new category
     const addCategory = async () => {
         if (!newCategory.trim()) {
             setAlertMessage("Category name cannot be empty!");
             setMessageStatus(false);
             return;
         }
+
         try {
             const response = await axios.post("http://127.0.0.1:8000/api/categories", {
                 name: newCategory
@@ -62,7 +55,6 @@ const Categories = () => {
         }
     };
 
-    // delete category function
     const deleteCategory = async (id) => {
         try {
             await axios.delete(`http://127.0.0.1:8000/api/categories/${id}`);
@@ -74,7 +66,6 @@ const Categories = () => {
         }
     };
 
-    // update or edit category function
     const updateCategory = async () => {
         if (!editCategory.name.trim()) {
             setAlertMessage("Category name cannot be empty!");
@@ -82,25 +73,15 @@ const Categories = () => {
             return;
         }
         try {
-            // Send PUT request
-            // alert(editCategory.id);
-            await axios.put(`http://127.0.0.1:8000/api/categories/${editCategory.id}`, { name: editCategory.name });
-    
-            // Update category list after successful update
-            setCategories(categories.map(category => 
-                category.id === editCategory.id ? { ...category, name: editCategory.name } : category
-            ));
-    
+            const response = await axios.put(`http://127.0.0.1:8000/api/categories/${editCategory.id}`, { name: editCategory.name });
+            setCategories(categories.map(category => category.id === editCategory.id ? response.data.data : category));
             setAlertMessage("Category updated successfully.");
             setMessageStatus(true);
-            
-            // Close modal after updating
             document.getElementById(`edit_category${editCategory.id}`).close();
         } catch (error) {
             setAlertMessage("Failed to update category!");
         }
     };
-    
 
     return (
         <>

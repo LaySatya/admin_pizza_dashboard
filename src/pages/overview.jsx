@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { FaProductHunt } from "react-icons/fa6";
 
 const Dashboard = () => {
+    // amount of users
+    const [amountUsers, setAmountUsers] = useState([]);
     // amount of orders
     const [amountOrders, setAmountOrders] = useState();
     // amount of categories
@@ -49,7 +51,7 @@ const Dashboard = () => {
             // fetch amount of foods or products
             const fetchFoods = async () => {
                 try {
-                    const response = await axios.get("http://127.0.0.1:8000/api/foods/getAllFoods", {
+                    const response = await axios.get("http://127.0.0.1:8000/api/foods/fetchAllFoods", {
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },
@@ -62,10 +64,26 @@ const Dashboard = () => {
                 }
             };
 
+            // fetch amount of users 
+            const fetchCustomers = async () => {
+                try {
+                    const response = await axios.get("http://127.0.0.1:8000/api/users", {
+                        // headers: {
+                        //     Authorization: `Bearer ${token}`,
+                        // },
+                    });
+                    setAmountUsers(response.data.data);
+                } catch (err) {
+                    setError(err.message);
+                } finally {
+                    setLoading(false);
+                }
+            }
         
             fetchFoods();
             fetchCategories();
             fetchAmountOfOrders();
+            fetchCustomers();
         }, []);
     
         if (loading) return <p>Loading...</p>;
@@ -76,7 +94,7 @@ const Dashboard = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="card bg-base-100 card-sm shadow-sm">
                     <div className="card-body">
-                        <h2 className="card-title text-2xl">200</h2>
+                        <h2 className="card-title text-2xl">{amountUsers.length}</h2>
                         <div className="flex justify-between">
                             <p className="text-[15px] font-medium text-gray-500">Total Customers</p>
                             <div className="w-14 h-14 rounded-full -mt-4 flex justify-center items-center text-white bg-amber-400">
@@ -90,7 +108,7 @@ const Dashboard = () => {
                 </div>
                 <div className="card bg-base-100 card-sm shadow-sm">
                     <div className="card-body">
-                        <h2 className="card-title text-2xl">200</h2>
+                        <h2 className="card-title text-2xl">$200</h2>
                         <div className="flex justify-between">
                             <p className="text-[15px] font-medium text-gray-500">Total Revenues</p>
                             <div className="w-14 h-14 rounded-full -mt-4 flex justify-center items-center text-white bg-amber-400">
