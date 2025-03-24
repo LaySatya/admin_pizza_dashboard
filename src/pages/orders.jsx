@@ -37,7 +37,17 @@ const Orders = () => {
         fetchOrders();
     }, []);
 
-    if (loading) return <p>Loading...</p>;
+    if (loading) return (
+        <>
+        <div className="flex justify-center items-center">
+            <span className="loading loading-ring loading-xs"></span>
+            <span className="loading loading-ring loading-sm"></span>
+            <span className="loading loading-ring loading-md"></span>
+            <span className="loading loading-ring loading-lg"></span>
+            <span className="loading loading-ring loading-xl"></span>
+        </div>
+        </>
+    );
     if (error) return <p>Error: {error}</p>;
 
     // Function to handle adding a new category
@@ -98,7 +108,7 @@ const Orders = () => {
                                 <th>Address</th>
                                 <th>Created at</th>
                                 <th>Detail</th>
-                                <th>Actions</th>
+                                {/* <th>Actions</th> */}
                             </tr>
                         </thead>
                         <tbody>
@@ -116,7 +126,7 @@ const Orders = () => {
                                             <td>{new Date(order.created_at).toLocaleDateString("en-US")}</td>
                                             <td>
                                                 {/* Order detail button */}
-                                                <button className="btn btn-error mx-1 btn-sm text-white"
+                                                <button className="btn btn-warning mx-1 btn-sm text-white"
                                                     onClick={() => document.getElementById(`order_detail${order.id}`).showModal()}>
                                                     <BiDetail height={17} />
                                                 </button>
@@ -134,10 +144,10 @@ const Orders = () => {
                                                     </div>
                                                 </dialog>
                                             </td>
-                                            <td>
+                                            {/* <td>
                                                
 
-                                            </td>
+                                            </td> */}
                                         </tr>
                                     )) : <tr>
                                         <td colSpan={9} className="text-center">No orders found!</td>

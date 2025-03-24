@@ -1,7 +1,7 @@
 import { User } from "lucide-react";
 import { useState } from "react";
 
-import { FaBox, FaClipboardList, FaCogs, FaDashcube, FaLayerGroup, FaTruck } from "react-icons/fa";
+import { FaBox, FaClipboardList, FaDashcube, FaLayerGroup, FaTruck } from "react-icons/fa";
 
 const Sidebar = ({ onSelect }) => {
     const menuItems = [
@@ -11,7 +11,7 @@ const Sidebar = ({ onSelect }) => {
         { id: "categories", name: "Categories", icon: <FaLayerGroup /> },
         { id: "users", name: "Users" , icon: <User /> },
         { id: "deliveries", name: "Deliveries", icon: <FaTruck /> },
-        { id: "setup", name: "Setup", icon: <FaCogs /> },
+        // { id: "setup", name: "Setup", icon: <FaCogs /> },
     ];
     const [active, setActive] = useState("overview");
 
