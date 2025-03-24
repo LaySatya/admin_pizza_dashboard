@@ -10,6 +10,8 @@ const Categories = () => {
     const [editCategory, setEditCategory] = useState({ id: null, name: "" });
     const [alertMessage, setAlertMessage] = useState(""); // State for alert
     const [messageStatus, setMessageStatus] = useState(false);
+    //search category by name
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -92,6 +94,10 @@ const Categories = () => {
             setAlertMessage("Failed to update category!");
         }
     };
+    // Filter categories based on search term
+    const filteredCategories = categories.filter(category => 
+        category.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <>
@@ -136,7 +142,15 @@ const Categories = () => {
                     </div>
                 </dialog>
             </div>
-
+            <div className="mt-5">
+                <input 
+                    type="text" 
+                    placeholder="Search category..." 
+                    className="input input-bordered"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </div>
             {/* Categories table */}
             <div className="mt-5">
                 <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
@@ -153,8 +167,8 @@ const Categories = () => {
                         </thead>
                         <tbody>
                             {
-                            categories.length > 0 ?
-                            categories.map((category) => (
+                            filteredCategories.length > 0 ?
+                            filteredCategories.map((category) => (
                                 <tr key={category.id}>
                                     <td>{category.id}</td>
                                     <td>{category.name}</td>

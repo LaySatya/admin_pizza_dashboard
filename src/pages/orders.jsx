@@ -50,19 +50,6 @@ const Orders = () => {
     );
     if (error) return <p>Error: {error}</p>;
 
-    // Function to handle adding a new category
-
-    // delete order
-    // const deleteOrder = async (id) => {
-    //     try {
-    //         await axios.delete(`http://127.0.0.1:8000/api/orders/${id}`);
-    //         setOrders(orders.filter(order => order.id !== id));
-    //         setAlertMessage("Order deleted successfully.");
-    //         setMessageStatus(true);
-    //     } catch (error) {
-    //         setAlertMessage("Failed to delete order!");
-    //     }
-    // };
 
     const orderStatus = (status) => {
         switch (status) {
@@ -81,13 +68,6 @@ const Orders = () => {
 
     return (
         <>
-            {/* Alert Message */}
-            {/* {alertMessage && (
-                <div role="alert" className={messageStatus ? "alert alert-success alert-outline mt-4" : "alert alert-error alert-outline mt-4"}>
-                    <span>{alertMessage}</span>
-                </div>
-            )} */}
-
             <div className="flex justify-between mt-5">
                 <h2 className="text-xl font-bold">📦 Orders</h2>
             </div>

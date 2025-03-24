@@ -58,7 +58,7 @@ function Login() {
                     required
                 />
 
-                <button className="btn btn-neutral mt-4" onClick={handleSubmit}>Login</button>
+                <button className="btn btn-warning mt-4 text-amber-100" onClick={handleSubmit}>Login</button>
             </fieldset>
         </div>
     );
