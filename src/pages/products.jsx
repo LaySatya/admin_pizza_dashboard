@@ -314,17 +314,21 @@ const Products = () => {
                                         <td>{food.description}</td>
                                         <td>${food.price}</td>
                                         <td>
-                                            {food.image === "test" ? (
+                                            {food.image ? (
                                                 <img src={food.image} alt={food.name} className="h-14" />
                                             ) : (
                                                 <img
-                                                    className="h-14"
-                                                    src="https://th.bing.com/th/id/OIP.HXOh5qUfUbzCGR_lzgMWHQHaHa?rs=1&pid=ImgDetMain"
-                                                    alt="Placeholder"
+                                                className="h-14"
+                                                src="https://th.bing.com/th/id/OIP.HXOh5qUfUbzCGR_lzgMWHQHaHa?rs=1&pid=ImgDetMain"
+                                                alt="Placeholder"
                                                 />
                                             )}
                                         </td>
-                                        <td>{food.category.name}</td>
+                                        {console.log(food.image)}
+                                        {/* when using food.category.name, it will cause error when creating new food. */}
+                                        {/* <td>{food.category.name}</td> */}
+                                        {/* so now use food.category for testing first. Will fix that error later */}
+                                        <td>{food.category_id}</td>
                                         <td>
                                             <button className="btn btn-error mx-1 btn-sm text-white" onClick={() => {
                                                 setFoodIdToDelete(food.id);
