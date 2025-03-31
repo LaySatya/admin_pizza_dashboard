@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 
 const Users = () => {
     const [users, setUsers] = useState([]);
-    const [roles, setRoles] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
@@ -12,22 +11,26 @@ const Users = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [usersRes, rolesRes] = await Promise.all([
-                    axios.get("http://127.0.0.1:8000/api/users"),
-                    axios.get("http://127.0.0.1:8000/api/roles"),
-                ]);
+                const usersRes = await axios.get("http://127.0.0.1:8000/api/users");
 
                 const usersData = usersRes.data.data || [];
-                const rolesData = rolesRes.data.data || [];
 
-                const mergedData = usersData.map(user => ({
-                    ...user,
-                    role: rolesData.find(role => role.id === user.role_id)?.name || "Unknown",
-                }));
+                // Add role names based on the role_id
+                const usersWithRoles = usersData.map(user => {
+                    let roleName = "Unknown";
+                    if (user.role_id === 1) {
+                        roleName = "Admin";
+                    } else if (user.role_id === 2) {
+                        roleName = "Customer";
+                    } else if (user.role_id === 3) {
+                        roleName = "Driver";
+                    }
+                    return { ...user, role: roleName };
+                });
 
-                setUsers(mergedData);
-                setRoles(rolesData);
+                setUsers(usersWithRoles);
             } catch (err) {
+                console.error("Error fetching data:", err); // Log the full error
                 setError(err.message);
             } finally {
                 setLoading(false);
@@ -91,7 +94,7 @@ const Users = () => {
                                     <tr key={user.id}>
                                         <td>{user.id}</td>
                                         <td>
-                                            <img src={user.profile} alt="Profile" className="w-10 h-10 rounded-full" />
+                                            <img src={user.profile || 'default-profile.jpg'} alt="Profile" className="w-10 h-10 rounded-full" />
                                         </td>
                                         <td>{user.name}</td>
                                         <td>{user.email}</td>
