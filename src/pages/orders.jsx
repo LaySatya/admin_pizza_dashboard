@@ -126,16 +126,26 @@ const Orders = () => {
                                             <td>{order.customer_id}</td>
                                             <td>{order.quantity}</td>
                                             <td>
-                                            <button className="btn bg-green-500 mx-1 btn-sm text-white"
-                                                    onClick={() => handleStatusChange(order.id, 'accepted')}>
-                                                    Accept
-                                            </button>
-                                            <button className="btn bg-red-500 btn-sm text-white"
-                                                    onClick={() => handleStatusChange(order.id, 'declined')}>
-                                                    Decline
-                                            </button>  
-
+                                            {order.status !== "accepted" && order.status !== "declined" ? (
+                                                <>
+                                                    <button
+                                                        className="btn bg-green-500 mx-1 btn-sm text-white"
+                                                        onClick={() => handleStatusChange(order.id, "accepted")}
+                                                    >
+                                                        Accept
+                                                    </button>
+                                                    <button
+                                                        className="btn bg-red-500 btn-sm text-white"
+                                                        onClick={() => handleStatusChange(order.id, "declined")}
+                                                    >
+                                                        Decline
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <span>{order.status}</span> // Optionally show the current status
+                                            )}
                                             </td>
+
                                             <td>{order.driver_id}</td>
                                             <td>{order.address_id}</td>
                                             <td>{new Date(order.created_at).toLocaleDateString("en-US")}</td>
