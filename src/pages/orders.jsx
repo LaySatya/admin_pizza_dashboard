@@ -3,25 +3,25 @@ import { useEffect, useState } from "react";
 import { BiDetail } from "react-icons/bi";
 
 const Orders = () => {
-    // orders data
     const [orders, setOrders] = useState([]);
-    // loading state
     const [loading, setLoading] = useState(true);
-    // error state
     const [error, setError] = useState(null);
-    // get user token from api
-    const token = localStorage.getItem('token');
+    const [selectedOrder, setSelectedOrder] = useState(null); // Store selected order details
+    const [drivers, setDrivers] = useState([]);
 
-    // fetch orders
+    const token = localStorage.getItem("token");
+
     useEffect(() => {
-        // fetch all orders
         const fetchOrders = async () => {
             try {
-                const response = await axios.get("http://127.0.0.1:8000/api/orders/fetch-order-details", {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+                const response = await axios.get(
+                    "http://127.0.0.1:8000/api/orders/fetch-order-details",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
                 setOrders(response.data.data);
             } catch (err) {
                 setError(err.message);
@@ -30,74 +30,69 @@ const Orders = () => {
             }
         };
 
+        const fetchDrivers = async () => {
+            try {
+                const response = await axios.get('http://127.0.0.1:8000/api/users/fetch-all-driver');
+                setDrivers(response.data.data); // Set the drivers list
+            } catch (err) {
+                setError('Failed to fetch drivers');
+            }
+        };
+
         fetchOrders();
+        fetchDrivers();
     }, []);
 
-    // fetch order details and show in alert
+
+
     const fetchOrderDetails = async (orderId) => {
         try {
-            const response = await axios.get(`http://127.0.0.1:8000/api/orders/fetch-order-detail-by-id/${orderId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            const order = response.data.data;
-            const foodItems = order.order_details.map(item => `${item.name} - Quantity: ${item.quantity} - Price: $${item.price}`).join("\n");
-            const orderDetail = `
-                Order Number: ${order.order_number}
-                Customer ID: ${order.customer_id}
-                Driver ID: ${order.driver_id}
-                Address ID: ${order.address_id}
-                Status: ${order.status}
-                Quantity: ${order.quantity}
-                Total: $${order.total}
-                Delivery Fee: $${order.delivery_fee}
-                Tax: $${order.tax}
-                Discount: $${order.discount}
-                Payment Method: ${order.payment_method}
-                Estimated Delivery Time: ${order.estimated_delivery_time ? order.estimated_delivery_time : "N/A"}
-                Created At: ${new Date(order.created_at).toLocaleString()}
-                Updated At: ${new Date(order.updated_at).toLocaleString()}
-                Food Items:
-                ${foodItems}
-            `;
-            console.log(orderDetail);
+            const response = await axios.get(
+                `http://127.0.0.1:8000/api/orders/fetch-order-detail-by-id/${orderId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            setSelectedOrder(response.data.data);
         } catch (err) {
             console.error("Failed to fetch order details:", err);
         }
     };
-    
-    
 
-    if (loading) return (
-        <div className="flex justify-center items-center">
-            <span className="loading loading-ring loading-xs"></span>
-            <span className="loading loading-ring loading-sm"></span>
-            <span className="loading loading-ring loading-md"></span>
-            <span className="loading loading-ring loading-lg"></span>
-            <span className="loading loading-ring loading-xl"></span>
-        </div>
-    );
-    if (error) return <p>Error: {error}</p>;
+    // Function to handle the accept/decline action
 
-    const orderStatus = (status) => {
-        switch (status) {
-          case "success":
-            return <div className="badge badge-soft badge-success">Success</div>;
-          case "pending":
-            return <div className="badge badge-soft badge-warning">Pending</div>;
-          case "failed":
-            return <div className="badge badge-soft badge-danger">Failed</div>;
-          case "processing":
-            return <div className="badge badge-soft badge-info">Processing</div>;
-          default:
-            return <div className="badge badge-soft badge-secondary">Unknown</div>;
-        }
-    };
-
-      // Function to handle the accept/decline action
+    // const handleStatusChange = async (orderId, status) => {
+    //     try {
+    //         const response = await axios.patch(
+    //             `http://127.0.0.1:8000/api/orders/accept-or-declined/${orderId}`,
+    //             { status },
+    //             {
+    //                 headers: {
+    //                     Authorization: `Bearer ${token}`,
+    //                 },
+    //             }
+    //         );
+    //         // Update the local state with the new order status
+    //         setOrders(prevOrders =>
+    //             prevOrders.map(order =>
+    //                 order.id === orderId ? { ...order, status: response.data.order.status } : order
+    //             )
+    //         );
+    //     } catch (err) {
+    //         setError(err.message);
+    //     }
+    // };
 
     const handleStatusChange = async (orderId, status) => {
+        // Optimistically update UI first
+        setOrders(prevOrders =>
+            prevOrders.map(order =>
+                order.id === orderId ? { ...order, status } : order
+            )
+        );
+
         try {
             const response = await axios.patch(
                 `http://127.0.0.1:8000/api/orders/accept-or-declined/${orderId}`,
@@ -108,17 +103,48 @@ const Orders = () => {
                     },
                 }
             );
-            // Update the local state with the new order status
+
+            // Ensure backend status is reflected in UI
             setOrders(prevOrders =>
                 prevOrders.map(order =>
                     order.id === orderId ? { ...order, status: response.data.order.status } : order
                 )
             );
         } catch (err) {
+            // Revert to previous status if API fails
+            setOrders(prevOrders =>
+                prevOrders.map(order =>
+                    order.id === orderId ? { ...order, status: prevOrders.find(o => o.id === orderId).status } : order
+                )
+            );
             setError(err.message);
         }
     };
-    
+
+
+    if (loading)
+        return (
+            <div className="flex justify-center items-center">
+                <span className="loading loading-ring loading-lg"></span>
+            </div>
+        );
+
+    if (error) return <p>Error: {error}</p>;
+
+    const orderStatus = (status) => {
+        switch (status) {
+            case "success":
+                return <div className="badge badge-success">Success</div>;
+            case "pending":
+                return <div className="badge badge-warning">Pending</div>;
+            case "failed":
+                return <div className="badge badge-danger">Failed</div>;
+            case "processing":
+                return <div className="badge badge-info">Processing</div>;
+            default:
+                return <div className="badge badge-secondary">Unknown</div>;
+        }
+    };
 
     return (
         <>
@@ -126,69 +152,133 @@ const Orders = () => {
                 <h2 className="text-xl font-bold">📦 Orders</h2>
             </div>
 
-            {/* Categories table */}
             <div className="mt-5">
                 <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
                     <table className="table">
-                        {/* Table head */}
                         <thead>
                             <tr>
-                                <th>Order number</th>
+                                <th>Order Number</th>
                                 <th>Food</th>
                                 <th>Customer</th>
                                 <th>Quantity</th>
                                 <th>Status</th>
                                 <th>Driver</th>
                                 <th>Address</th>
-                                <th>Created at</th>
+                                <th>Created At</th>
                                 <th>Detail</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {
-                                orders.length > 0 ?
-                                    orders.map((order) => (
-                                        <tr key={order.id}>
-                                            <td>{order.order_number}</td>
-                                            <td></td>
-                                            <td>{order.customer_id}</td>
-                                            <td>{order.quantity}</td>
-                                            <td>{orderStatus(order.status)}</td>
-                                            <td>{order.driver_id}</td>
-                                            <td>{order.address_id}</td>
-                                            <td>{new Date(order.created_at).toLocaleDateString("en-US")}</td>
-                                            <td>
-                                                {/* Order detail button */}
-                                                <button className="btn btn-warning mx-1 btn-sm text-white"
-                                                    onClick={() => document.getElementById(`order_detail${order.id}`).showModal()}>
-                                                    <BiDetail height={17} />
-                                                </button>
-                                                {/* Order detail dialog */}
-                                                <dialog id={`order_detail${order.id}`} className="modal">
-                                                    <div className="modal-box w-11/12 max-w-5xl">
-                                                        <h3 className="font-bold text-lg">Order Detail</h3>
-                                                        <p className="py-4"></p>
-                                                        <div className="modal-action">
-                                                            <form method="dialog">
-                                                                {/* if there is a button, it will close the modal */}
-                                                                <button className="btn">Close</button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </dialog>
-                                            </td>
-                                            {/* <td>
-                                               
+                            {orders.length > 0 ? (
+                                orders.map((order) => (
+                                    <tr key={order.id}>
+                                        <td>{order.order_number}</td>
+                                        <td>
+                                            {order.order_details
+                                                .map((item) => item.name)
+                                                .join(", ")}
+                                        </td>
+                                        <td>{order.customer.name}</td>
+                                        <td>{order.quantity}</td>
 
-                                            </td> */}
-                                        </tr>
-                                    )) : <tr>
-                                        <td colSpan={9} className="text-center">No orders found!</td>
-                                    </tr>}
+                                        <td>
+                                            <select
+                                                className="select select-bordered select-sm"
+                                                value={order.status}
+                                                onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                                                disabled={order.status == "assigning" || order.status === "delivering" || order.status === "completed"}
+                                            >
+                                                <option value="pending">🟡 Pending</option>
+                                                <option value="accepted">✅ Accepted</option>
+                                                <option value="declined">❌ Declined</option>
+                                                <option value="assigning">🔄 Assigning</option>
+                                                <option value="delivering">🚚 Delivering</option>
+                                                <option value="completed">🎉 Completed</option>
+                                            </select>
+                                        </td>
+
+                                        <td>
+                                            <select
+                                                value={order.driverId || ''}
+                                                // onChange={(e) => handleDriverChange(order.id, e.target.value)}
+                                                // disabled={order.status !== 'completed'} 
+                                            >
+                                                <option value="">Select Driver</option>
+                                                {drivers.map(driver => (
+                                                    <option key={driver.id} value={driver.id}>
+                                                        {driver.name} ({driver.phone})
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </td>
+
+                                        <td>{order.address?.reference}</td>
+                                        <td>
+                                            {new Date(order.created_at).toLocaleDateString(
+                                                "en-US"
+                                            )}
+                                        </td>
+                                        <td>
+                                            <button
+                                                className="btn btn-warning mx-1 btn-sm text-white"
+                                                onClick={() => {
+                                                    fetchOrderDetails(order.id);
+                                                    document
+                                                        .getElementById("orderDetailModal")
+                                                        .showModal();
+                                                }}
+                                            >
+                                                <BiDetail height={17} />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={9} className="text-center">
+                                        No orders found!
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
             </div>
+
+            {/* Order Detail Modal */}
+            <dialog id="orderDetailModal" className="modal">
+                <div className="modal-box w-11/12 max-w-5xl">
+                    <h3 className="font-bold text-lg">Order Detail</h3>
+                    {selectedOrder ? (
+                        <div>
+                            <p>Order Number: {selectedOrder.order_number}</p>
+                            <p>Customer: {selectedOrder.customer.name}</p>
+                            <p>Driver: {selectedOrder.driver?.name ?? "Not assigned"}</p>
+                            <p>Address: {selectedOrder.address?.reference ?? "N/A"}</p>
+                            <p>Status: {selectedOrder.status}</p>
+                            <p>Payment: {selectedOrder.payment_method}</p>
+                            <p>Total: ${selectedOrder.total}</p>
+                            <p>Created At: {new Date(selectedOrder.created_at).toLocaleString()}</p>
+                            <p>Updated At: {new Date(selectedOrder.updated_at).toLocaleString()}</p>
+                            <h4 className="mt-2 font-bold">Food Items:</h4>
+                            <ul>
+                                {selectedOrder.order_details.map((item) => (
+                                    <li key={item.id}>
+                                        {item.name} - {item.quantity} x ${item.price}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ) : (
+                        <p>Loading order details...</p>
+                    )}
+                    <div className="modal-action">
+                        <form method="dialog">
+                            <button className="btn">Close</button>
+                        </form>
+                    </div>
+                </div>
+            </dialog>
         </>
     );
 };
