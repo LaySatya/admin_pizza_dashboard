@@ -55,16 +55,41 @@ const Orders = () => {
         switch (status) {
           case "success":
             return <div className="badge badge-soft badge-success">Success</div>;
-          case "pending":
-            return <div className="badge badge-soft badge-warning">Pending</div>;
-          case "failed":
-            return <div className="badge badge-soft badge-danger">Failed</div>;
+          case "Accept":
+            return <div className="badge badge-soft badge-warning">Accept</div>;
+          case "Decline":
+            return <div className="badge badge-soft badge-danger">Decline</div>;
           case "processing":
             return <div className="badge badge-soft badge-info">Processing</div>;
           default:
             return <div className="badge badge-soft badge-secondary">Unknown</div>;
         }
       };
+
+      // Function to handle the accept/decline action
+
+    const handleStatusChange = async (orderId, status) => {
+        try {
+            const response = await axios.patch(
+                `http://127.0.0.1:8000/api/orders/accept-or-declined/${orderId}`,
+                { status },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            // Update the local state with the new order status
+            setOrders(prevOrders =>
+                prevOrders.map(order =>
+                    order.id === orderId ? { ...order, status: response.data.order.status } : order
+                )
+            );
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+    
 
     return (
         <>
@@ -100,7 +125,17 @@ const Orders = () => {
                                             <td></td>
                                             <td>{order.customer_id}</td>
                                             <td>{order.quantity}</td>
-                                            <td>{orderStatus(order.status)}</td>
+                                            <td>
+                                            <button className="btn bg-green-500 mx-1 btn-sm text-white"
+                                                    onClick={() => handleStatusChange(order.id, 'accepted')}>
+                                                    Accept
+                                            </button>
+                                            <button className="btn bg-red-500 btn-sm text-white"
+                                                    onClick={() => handleStatusChange(order.id, 'declined')}>
+                                                    Decline
+                                            </button>  
+
+                                            </td>
                                             <td>{order.driver_id}</td>
                                             <td>{order.address_id}</td>
                                             <td>{new Date(order.created_at).toLocaleDateString("en-US")}</td>
