@@ -66,6 +66,7 @@ const Orders = () => {
                     },
                 }
             );
+            console.log("order detail response: ", response.data.data)
             setSelectedOrder(response.data.data);
         } catch (err) {
             console.error("Failed to fetch order details:", err);
@@ -307,7 +308,7 @@ const Orders = () => {
                     {selectedOrder ? (
                         <div>
                             <p>Order Number: {selectedOrder.order_number}</p>
-                            <p>Customer: {selectedOrder.customer.name}</p>
+                            {/* <p>Customer: {selectedOrder.customer.name}</p> */}
                             {/* <p>Driver: {selectedOrder.driver?.name ?? "Not assigned"}</p> */}
                             <p>Address: {selectedOrder.address?.reference ?? "N/A"}</p>
                             <p>Status: {selectedOrder.status}</p>
