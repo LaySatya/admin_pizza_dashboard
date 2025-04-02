@@ -6,53 +6,60 @@ import { MdKeyboardArrowDown } from "react-icons/md";
 const deliveries = new Array(6).fill({
   id: "#001",
   status: "Ready",
-  image: "https://theawesomedaily.com/wp-content/uploads/2016/09/pictures-of-pizza-23-1.jpg",
+  image:
+    "https://theawesomedaily.com/wp-content/uploads/2016/09/pictures-of-pizza-23-1.jpg",
 });
 
 const TopBar = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [profileImg, setProfileImg] = useState("");
+  const [adminName, setAdminName] = useState("");
 
   const handleLogout = () => {
-    localStorage.removeItem("token");      // Remove authentication token
+    localStorage.removeItem("token"); // Remove authentication token
     localStorage.removeItem("isLoggedIn"); // Mark user as logged out
     localStorage.removeItem("user_id");
-    
+
     window.location.href = "/"; // Redirect to login page
   };
 
-const [profileImg, setProfileImg] = useState("");
 
-useEffect(() => {
-  const fetchProfile = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const userId = localStorage.getItem("user_id"); // Store user ID after login
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const userId = localStorage.getItem("user_id"); // Store user ID after login
 
-      if (!userId) {
-        console.error("User ID not found");
-        return;
+        if (!userId) {
+          console.error("User ID not found");
+          return;
+        }
+
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/users/${userId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        setAdminName(response.data.data.name)
+        console.log(response.data.data.avatar);
+        setProfileImg(response.data.data.avatar);
+
+      } catch (error) {
+        console.error("Error fetching profile:", error);
       }
+    };
 
-      const response = await axios.get(`http://127.0.0.1:8000/api/users/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setProfileImg(response.data.profile_img || "https://via.placeholder.com/150");
-    } catch (error) {
-      console.error("Error fetching profile:", error);
-    }
-  };
-
-  fetchProfile();
-}, []);
-
+    fetchProfile();
+  }, []);
 
   return (
     <div className="w-full h-16 bg-white flex justify-between items-center shadow shadow-sm px-6 relative">
-      <h1 className="text-2xl font-semibold">Hello, Panhavath!</h1>
+      <h1 className="text-2xl font-semibold">{adminName}</h1>
       <div className="flex items-center gap-6">
-        {/* Notification Bell */} 
+        {/* Notification Bell */}
         <div className="relative">
           <div
             className="relative cursor-pointer"
@@ -71,7 +78,10 @@ useEffect(() => {
               <h2 className="text-lg font-semibold mb-2">Orders</h2>
               <div className="max-h-60 overflow-y-auto">
                 {deliveries.map((delivery, index) => (
-                  <div key={index} className="flex items-center gap-3 p-2 border-b">
+                  <div
+                    key={index}
+                    className="flex items-center gap-3 p-2 border-b"
+                  >
                     <img
                       src={delivery.image}
                       alt="Order"
@@ -104,10 +114,13 @@ useEffect(() => {
 
           {showProfileDropdown && (
             <div className="absolute right-0 mt-3 w-48 bg-white shadow-lg rounded-lg py-2 z-50">
-              <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+              <a
+                href="#"
+                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+              >
                 Profile
               </a>
-              <button 
+              <button
                 className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                 onClick={handleLogout} // Call logout function
               >
