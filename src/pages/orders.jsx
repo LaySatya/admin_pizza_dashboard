@@ -33,18 +33,18 @@ const Orders = () => {
 
         const fetchDrivers = async () => {
             try {
-                const response= await axios.get('http://127.0.0.1:8000/api/orders/fetch-all-drivers',{
+                const response= await axios.get('http://127.0.0.1:8000/api/users/get-users-by-role-name/driver',{
                     headers:{
                         Authorization : `Bearer ${token}`,
                     }
                     
                 });
                 console.log('Drivers response:', response.data);
-                if (Array.isArray(response.data)) {
-                    setDrivers(response.data);
+                if (Array.isArray(response.data.data)) {
+                    setDrivers(response.data.data);
                 } else {
                     console.error("Invalid drivers format", response.data);
-                }                // setDrivers(response.data.data) do not use this because API does not reponse with this format
+                }                
             } catch (err) {
                 setError('Failed to fetch drivers');
             }
