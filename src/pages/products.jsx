@@ -22,7 +22,7 @@ const Products = () => {
         description: "",
         price: "",
         category_id: "",
-        image: "",
+        image: null
     });
 
     //added this because we are working with modal, we need to pass the food id to the modal
@@ -79,7 +79,7 @@ const Products = () => {
             formData.append("description", newFood.description);
             formData.append("price", newFood.price);
             formData.append("category_id", newFood.category_id);
-            if (newFood.image) formData.append("image", newFood.image);
+            if (newFood.image) formData.append("img", newFood.image);
 
             const response = await axios.post("http://127.0.0.1:8000/api/foods/create", formData, {
                 headers: {
@@ -123,7 +123,7 @@ const Products = () => {
             formData.append("description", foodToEdit.description);
             formData.append("price", foodToEdit.price);
             formData.append("category_id", foodToEdit.category_id);
-            if (foodToEdit.image) formData.append("image", foodToEdit.image);
+            if (foodToEdit.image) formData.append("img", foodToEdit.image);
 
             const response = await axios.post(`http://127.0.0.1:8000/api/foods/update/${foodToEdit.id}`, formData, {
                 headers: {
