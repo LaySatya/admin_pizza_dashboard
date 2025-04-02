@@ -210,69 +210,9 @@ const Products = () => {
                 >
                     New <Plus />
                 </button>
-                <dialog id="add_new_product" className="modal">
-                    <div className="modal-box">
-                        <h3 className="font-bold text-lg">Add Product</h3>
-                        <form onSubmit={(e) => {
-                            e.preventDefault();
-                            addFood();
-                        }}>
-                            <div className="mt-5">
-                                <input
-                                    type="text"
-                                    placeholder="Product name"
-                                    className="input input-md w-full"
-                                    value={newFood.name}
-                                    onChange={e => setNewFood({ ...newFood, name: e.target.value })}
-                                />
-                            </div>
-                            <div className="mt-5">
-                                <input
-                                    type="text"
-                                    placeholder="Description"
-                                    className="input input-md w-full"
-                                    value={newFood.description}
-                                    onChange={e => setNewFood({ ...newFood, description: e.target.value })}
-                                />
-                            </div>
-                            <div className="mt-5">
-                                <input
-                                    type="text"
-                                    placeholder="Price"
-                                    className="input input-md w-full"
-                                    value={newFood.price}
-                                    onChange={e => setNewFood({ ...newFood, price: e.target.value })}
-                                />
-                            </div>
-                            <div className="mt-5">
-                                <select
-                                    className="select select-md w-full"
-                                    value={newFood.category_id}
-                                    onChange={e => setNewFood({ ...newFood, category_id: e.target.value })}
-                                >
-                                    <option disabled>Choose category</option>
-                                    {categories.map(category => (
-                                        <option key={category.id} value={category.id}>
-                                            {category.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="mt-5">
-                                <input
-                                    type="file"
-                                    className="file-input file-input-md"
-                                    onChange={e => setNewFood({ ...newFood, image: e.target.files[0] })}
-                                />
-                            </div>
-                        </form>
-                        <div className="modal-action">
-                            <button className="btn mx-2" onClick={() => document.getElementById("add_new_product").close()}>Close</button>
-                            <button className="btn btn-warning" onClick={addFood} type="submit">Save</button>
-                        </div>
-                    </div>
-                </dialog>
             </div>
+            
+            {/* search box */}
             <div className="mt-5">
                 <label className="input">
                     <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -288,16 +228,80 @@ const Products = () => {
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </label>
-            </div>                                       
-            {/* edit product dialog */}
+            </div>    
 
-                    <dialog  id="edit_product" className="modal">
-                    <div className="modal-box">
-                        <h3 className="font-bold text-lg">Edit Product</h3>
-                        <form onSubmit={(e) => {
-                            e.preventDefault();
-                            editFood(); // Trigger the edit function on form submit
-                        }}>
+            {/* add new product */}
+            <dialog id="add_new_product" className="modal">
+            <div className="modal-box">
+                <h3 className="font-bold text-lg">Add Product</h3>
+                <form onSubmit={(e) => {
+                    e.preventDefault();
+                    addFood();
+                }}>
+                    <div className="mt-5">
+                        <input
+                            type="text"
+                            placeholder="Product name"
+                            className="input input-md w-full"
+                            value={newFood.name}
+                            onChange={e => setNewFood({ ...newFood, name: e.target.value })}
+                        />
+                    </div>
+                    <div className="mt-5">
+                        <input
+                            type="text"
+                            placeholder="Description"
+                            className="input input-md w-full"
+                            value={newFood.description}
+                            onChange={e => setNewFood({ ...newFood, description: e.target.value })}
+                        />
+                    </div>
+                    <div className="mt-5">
+                        <input
+                            type="text"
+                            placeholder="Price"
+                            className="input input-md w-full"
+                            value={newFood.price}
+                            onChange={e => setNewFood({ ...newFood, price: e.target.value })}
+                        />
+                    </div>
+                    <div className="mt-5">
+                        <select
+                            className="select select-md w-full"
+                            value={newFood.category_id}
+                            onChange={e => setNewFood({ ...newFood, category_id: e.target.value })}
+                        >
+                            <option disabled>Choose category</option>
+                            {categories.map(category => (
+                                <option key={category.id} value={category.id}>
+                                    {category.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="mt-5">
+                        <input
+                            type="file"
+                            className="file-input file-input-md"
+                            onChange={e => setNewFood({ ...newFood, image: e.target.files[0] })}
+                        />
+                    </div>
+                </form>
+                <div className="modal-action">
+                    <button className="btn mx-2" onClick={() => document.getElementById("add_new_product").close()}>Close</button>
+                    <button className="btn btn-warning" onClick={addFood} type="submit">Save</button>
+                </div>
+            </div>
+            </dialog>
+
+            {/* edit product dialog */}
+            <dialog  id="edit_product" className="modal">
+            <div className="modal-box">
+                <h3 className="font-bold text-lg">Edit Product</h3>
+                <form onSubmit={(e) => {
+                    e.preventDefault();
+                    editFood(); // Trigger the edit function on form submit
+                }}>
                     <div className="mt-5">
                         <input
                             type="text"
@@ -347,17 +351,43 @@ const Products = () => {
                         />
                     </div>
                 </form>
-                <div className="modal-action">
-                    <button className="btn mx-2" onClick={() => document.getElementById("edit_product").close()}>Close</button>
-                    <button className="btn btn-warning" onClick={editFood} type="submit">Save</button>
-                </div>
+                    <div className="modal-action">
+                        <button className="btn mx-2" onClick={() => document.getElementById("edit_product").close()}>Close</button>
+                        <button className="btn btn-warning" onClick={editFood} type="submit">Save</button>
+                    </div>
             </div>
-        </dialog>
+            </dialog>
+            
+            {/* delete product dialog */}
+            <dialog id="delete_product" className="modal">
+                <div className="modal-box">
+                    <form method="dialog">
+                    <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                        ✕
+                    </button>
+                    </form>
+                    <h3 className="font-bold text-lg">Delete Product</h3>
+                    <p className="py-4 text-[16px]">Are you sure?</p>
+                    <div className="modal-action">
+                    <form method="dialog">
+                        <button className="btn">Close</button>
 
-
+                        <button
+                        className="btn btn-error mx-1 text-white"
+                        onClick={() => {
+                            deleteFood(foodIdToDelete);
+                            document.getElementById("delete_product").close();
+                        }}
+                        >
+                        <Trash height={17} />
+                        </button>
+                    </form>
+                    </div>
+                </div>
+            </dialog>
 
             <div className="mt-5">
-                <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
+                <div className="overflow-auto rounded-box border border-base-content/5 bg-base-100">
                     <table className="table">
                         <thead>
                             <tr>
@@ -396,43 +426,20 @@ const Products = () => {
                                         {/* so now use food.category for testing first. Will fix that error later */}
                                         <td>{food.category_id}</td>
                                         <td>
-                                        <button
-                                                 className="btn btn-error mx-1 btn-sm text-white"
-                                                 onClick={()=>{
-                                                     setFoodIdToDelete(food.id);
-                                                     document.getElementById('delete_product').showModal()
-                                                 }
-                                                 }
-                                             >
-                                                 <Trash height={17} />
-                                             </button>
-                                        <dialog id="delete_product" className="modal">
-                                                 <div className="modal-box">
-                                                     <form method="dialog">
-                                                         <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-                                                             ✕
-                                                         </button>
-                                                     </form>
-                                                     <h3 className="font-bold text-lg">Delete Product</h3>
-                                                     <p className="py-4 text-[16px]">Are you sure?</p>
-                                                     <div className="modal-action">
-                                                         <form method="dialog">
-                                                             <button className="btn">Close</button>
-                                                            
-                                                             <button className="btn btn-error mx-1 text-white" 
-                                                                 onClick={() => {
-                                                                     deleteFood(foodIdToDelete);
-                                                                     document.getElementById('delete_product').close();
-                                                                 }}
-                                                             >
-                                                                 <Trash height={17} /> 
-                                                             </button>
-                                                         </form>
-                                                     </div>
-                                                 </div>
-                                             </dialog>
-                                            
-                                            <button className="btn btn-info btn-sm text-white" onClick={() => handleEditClick(food)}>
+                                            <button 
+                                                className="btn btn-error mx-1 btn-sm text-white"
+                                                onClick={() => {
+                                                    setFoodIdToDelete(food.id);
+                                                        document.getElementById('delete_product').showModal()
+                                                    }
+                                                }
+                                            >
+                                                <Trash height={17} />
+                                            </button>  
+                                            <button 
+                                                className="btn btn-info btn-sm text-white" 
+                                                onClick={() => handleEditClick(food)}
+                                            >
                                                 <Edit height={17} />
                                             </button>
                                         </td>
@@ -443,8 +450,8 @@ const Products = () => {
                                     <td colSpan="7" className="text-center">No matching products found</td>
                                 </tr>
                             )}
-                        </tbody>
 
+                        </tbody>
                     </table>
                 </div>
             </div>
