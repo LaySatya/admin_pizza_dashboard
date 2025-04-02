@@ -22,7 +22,7 @@ const Products = () => {
         description: "",
         price: "",
         category_id: "",
-        image: null
+        image: "",
     });
 
     //added this because we are working with modal, we need to pass the food id to the modal
@@ -158,7 +158,7 @@ const Products = () => {
             description: food.description,
             price: food.price,
             category_id: food.category_id,
-            image: null, // This will be handled separately if you want to change the image
+            image: food.image// This will be handled separately if you want to change the image
         });
         document.getElementById("edit_product").showModal(); // Show the edit modal
     };
@@ -420,7 +420,7 @@ const Products = () => {
                                                 />
                                             )}
                                         </td>
-                                        {console.log(food.image)}
+                                        {/* {console.log(food.image)} */}
                                         {/* when using food.category.name, it will cause error when creating new food. */}
                                         {/* <td>{food.category.name}</td> */}
                                         {/* so now use food.category for testing first. Will fix that error later */}

@@ -44,7 +44,7 @@ const TopBar = () => {
         );
 
         setAdminName(response.data.data.name)
-        console.log(response.data.data.avatar);
+        // console.log(response.data.data.avatar);
         setProfileImg(response.data.data.avatar);
 
       } catch (error) {

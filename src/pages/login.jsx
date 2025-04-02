@@ -16,6 +16,15 @@ function Login() {
                 password,
             });
 
+            const userData = response.data.data;
+            console.log(userData);
+
+            // Check if user is an admin 
+            if (userData.role_id !== 1) {
+                setError("Only admin can log in.");
+                return;
+            }
+
             if (response.data.token) {
                 localStorage.setItem("token", response.data.token);
                 localStorage.setItem("user_id", response.data.data.id)
