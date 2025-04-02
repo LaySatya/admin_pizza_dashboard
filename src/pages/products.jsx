@@ -288,7 +288,73 @@ const Products = () => {
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </label>
+            </div>                                       
+            {/* edit product dialog */}
+
+                    <dialog  id="edit_product" className="modal">
+                    <div className="modal-box">
+                        <h3 className="font-bold text-lg">Edit Product</h3>
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            editFood(); // Trigger the edit function on form submit
+                        }}>
+                    <div className="mt-5">
+                        <input
+                            type="text"
+                            placeholder="Product name"
+                            className="input input-md w-full"
+                            value={foodToEdit.name}
+                            onChange={(e) => setFoodToEdit({ ...foodToEdit, name: e.target.value })}
+                        />
+                    </div>
+                    <div className="mt-5">
+                        <input
+                            type="text"
+                            placeholder="Description"
+                            className="input input-md w-full"
+                            value={foodToEdit.description}
+                            onChange={(e) => setFoodToEdit({ ...foodToEdit, description: e.target.value })}
+                        />
+                    </div>
+                    <div className="mt-5">
+                        <input
+                            type="text"
+                            placeholder="Price"
+                            className="input input-md w-full"
+                            value={foodToEdit.price}
+                            onChange={(e) => setFoodToEdit({ ...foodToEdit, price: e.target.value })}
+                        />
+                    </div>
+                    <div className="mt-5">
+                        <select
+                            className="select select-md w-full"
+                            value={foodToEdit.category_id}
+                            onChange={(e) => setFoodToEdit({ ...foodToEdit, category_id: e.target.value })}
+                        >
+                            <option disabled>Choose category</option>
+                            {categories.map(category => (
+                                <option key={category.id} value={category.id}>
+                                    {category.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="mt-5">
+                        <input 
+                            type="file" 
+                            className="file-input file-input-md" 
+                            onChange={e => setFoodToEdit({ ...foodToEdit, image: e.target.files[0] })}
+                        />
+                    </div>
+                </form>
+                <div className="modal-action">
+                    <button className="btn mx-2" onClick={() => document.getElementById("edit_product").close()}>Close</button>
+                    <button className="btn btn-warning" onClick={editFood} type="submit">Save</button>
+                </div>
             </div>
+        </dialog>
+
+
 
             <div className="mt-5">
                 <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
@@ -330,12 +396,42 @@ const Products = () => {
                                         {/* so now use food.category for testing first. Will fix that error later */}
                                         <td>{food.category_id}</td>
                                         <td>
-                                            <button className="btn btn-error mx-1 btn-sm text-white" onClick={() => {
-                                                setFoodIdToDelete(food.id);
-                                                document.getElementById('delete_product').showModal();
-                                            }}>
-                                                <Trash height={17} />
-                                            </button>
+                                        <button
+                                                 className="btn btn-error mx-1 btn-sm text-white"
+                                                 onClick={()=>{
+                                                     setFoodIdToDelete(food.id);
+                                                     document.getElementById('delete_product').showModal()
+                                                 }
+                                                 }
+                                             >
+                                                 <Trash height={17} />
+                                             </button>
+                                        <dialog id="delete_product" className="modal">
+                                                 <div className="modal-box">
+                                                     <form method="dialog">
+                                                         <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                                                             ✕
+                                                         </button>
+                                                     </form>
+                                                     <h3 className="font-bold text-lg">Delete Product</h3>
+                                                     <p className="py-4 text-[16px]">Are you sure?</p>
+                                                     <div className="modal-action">
+                                                         <form method="dialog">
+                                                             <button className="btn">Close</button>
+                                                            
+                                                             <button className="btn btn-error mx-1 text-white" 
+                                                                 onClick={() => {
+                                                                     deleteFood(foodIdToDelete);
+                                                                     document.getElementById('delete_product').close();
+                                                                 }}
+                                                             >
+                                                                 <Trash height={17} /> 
+                                                             </button>
+                                                         </form>
+                                                     </div>
+                                                 </div>
+                                             </dialog>
+                                            
                                             <button className="btn btn-info btn-sm text-white" onClick={() => handleEditClick(food)}>
                                                 <Edit height={17} />
                                             </button>
