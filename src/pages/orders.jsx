@@ -8,6 +8,7 @@ const Orders = () => {
     const [error, setError] = useState(null);
     const [selectedOrder, setSelectedOrder] = useState(null); // Store selected order details
     const [drivers, setDrivers] = useState([]);
+    const [selectedDrivers, setSelectedDrivers] = useState({});
 
     const token = localStorage.getItem("token");
 
@@ -32,8 +33,18 @@ const Orders = () => {
 
         const fetchDrivers = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/users/fetch-all-driver');
-                setDrivers(response.data.data); // Set the drivers list
+                const response= await axios.get('http://127.0.0.1:8000/api/orders/fetch-all-drivers',{
+                    headers:{
+                        Authorization : `Bearer ${token}`,
+                    }
+                    
+                });
+                console.log('Drivers response:', response.data);
+                if (Array.isArray(response.data)) {
+                    setDrivers(response.data);
+                } else {
+                    console.error("Invalid drivers format", response.data);
+                }                // setDrivers(response.data.data) do not use this because API does not reponse with this format
             } catch (err) {
                 setError('Failed to fetch drivers');
             }
@@ -103,6 +114,7 @@ const Orders = () => {
                     },
                 }
             );
+            
 
             // Ensure backend status is reflected in UI
             setOrders(prevOrders =>
@@ -120,7 +132,44 @@ const Orders = () => {
             setError(err.message);
         }
     };
-
+    
+    const handleDriverChange = (orderId, driverId) => {
+        setSelectedDrivers((prev) => ({
+            ...prev,
+            [orderId]: driverId,
+        }));
+    };
+    
+    const assignDriver = async (orderId) => {
+        const driverId = selectedDrivers[orderId];
+        if (!driverId) {
+            alert("Please select a driver");
+            return;
+        }
+    
+        try {
+            const response = await axios.patch(
+                `http://127.0.0.1:8000/api/orders/assign-a-driver/${orderId}`,
+                { driver_id: driverId },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            alert("Driver assigned successfully!");
+            // Optionally update UI after assigning driver
+            setOrders(prevOrders =>
+                prevOrders.map(order =>
+                    order.id === orderId ? { ...order, driver: response.data.driver } : order
+                )
+            );
+        } catch (err) {
+            console.error("Failed to assign driver:", err);
+            alert("Failed to assign driver");
+        }
+    };
+    
 
     if (loading)
         return (
@@ -182,34 +231,40 @@ const Orders = () => {
                                         <td>{order.quantity}</td>
 
                                         <td>
+                                            
                                             <select
                                                 className="select select-bordered select-sm"
                                                 value={order.status}
                                                 onChange={(e) => handleStatusChange(order.id, e.target.value)}
                                                 disabled={order.status == "assigning" || order.status === "delivering" || order.status === "completed"}
                                             >
-                                                <option value="pending">🟡 Pending</option>
+                                                {/* <option value="pending">🟡 Pending</option> */}
                                                 <option value="accepted">✅ Accepted</option>
                                                 <option value="declined">❌ Declined</option>
-                                                <option value="assigning">🔄 Assigning</option>
-                                                <option value="delivering">🚚 Delivering</option>
-                                                <option value="completed">🎉 Completed</option>
+                                                {/* <option value="assigning">🔄 Assigning</option> */}
+                                                {/* <option value="delivering">🚚 Delivering</option>
+                                                <option value="completed">🎉 Completed</option> */}
                                             </select>
                                         </td>
-
                                         <td>
-                                            <select
-                                                value={order.driverId || ''}
-                                                // onChange={(e) => handleDriverChange(order.id, e.target.value)}
-                                                // disabled={order.status !== 'completed'} 
-                                            >
-                                                <option value="">Select Driver</option>
-                                                {drivers.map(driver => (
-                                                    <option key={driver.id} value={driver.id}>
-                                                        {driver.name} ({driver.phone})
-                                                    </option>
-                                                ))}
-                                            </select>
+                                        <select
+                                            className="select select-bordered select-sm"
+                                            value={selectedDrivers[order.id] || ""}
+                                            onChange={(e) => handleDriverChange(order.id, e.target.value)}
+                                        >
+                                            <option value="">Select Driver</option>
+                                            {drivers.map((driver) => (
+                                                <option key={driver.id} value={driver.id}>
+                                                    {driver.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <button
+                                            className="btn btn-primary btn-sm ml-2"
+                                            onClick={() => assignDriver(order.id)}
+                                        >
+                                            Assign
+                                        </button>
                                         </td>
 
                                         <td>{order.address?.reference}</td>
@@ -253,7 +308,7 @@ const Orders = () => {
                         <div>
                             <p>Order Number: {selectedOrder.order_number}</p>
                             <p>Customer: {selectedOrder.customer.name}</p>
-                            <p>Driver: {selectedOrder.driver?.name ?? "Not assigned"}</p>
+                            {/* <p>Driver: {selectedOrder.driver?.name ?? "Not assigned"}</p> */}
                             <p>Address: {selectedOrder.address?.reference ?? "N/A"}</p>
                             <p>Status: {selectedOrder.status}</p>
                             <p>Payment: {selectedOrder.payment_method}</p>
@@ -272,6 +327,8 @@ const Orders = () => {
                     ) : (
                         <p>Loading order details...</p>
                     )}
+
+
                     <div className="modal-action">
                         <form method="dialog">
                             <button className="btn">Close</button>

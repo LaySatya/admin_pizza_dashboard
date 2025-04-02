@@ -50,7 +50,7 @@ useEffect(() => {
 
   return (
     <div className="w-full h-16 bg-white flex justify-between items-center shadow shadow-sm px-6 relative">
-      <h1 className="text-2xl font-semibold">Hello, Pich!</h1>
+      <h1 className="text-2xl font-semibold">Hello, Panhavath!</h1>
       <div className="flex items-center gap-6">
         {/* Notification Bell */} 
         <div className="relative">
