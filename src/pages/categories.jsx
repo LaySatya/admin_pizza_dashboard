@@ -59,7 +59,7 @@ const Categories = () => {
             setNewCategory(""); // Clear input field
             setAlertMessage(""); // Clear alert
             document.getElementById("add_new_category").close(); // Close modal
-            setAlertMessage("Category added successfully.");
+            setAlertMessage("Category added successfully :) ");
             setMessageStatus(true);
         } catch (error) {
             console.error("Error adding category:", error);

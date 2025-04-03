@@ -1,7 +1,8 @@
 import axios from "axios";
 import { Edit, Plus, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
-import { toast } from 'react-hot-toast';
+import { ToastContainer, toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css"; // Import CSS
 
 const Products = () => {
     const [searchQuery, setSearchQuery] = useState("");
@@ -69,8 +70,8 @@ const Products = () => {
 
     const addFood = async () => {
         try {
-            if (!newFood.name || !newFood.description || !newFood.price || !newFood.category_id) {
-                toast.error("All fields are required!");
+            if (!newFood.name || !newFood.description || !newFood.price || !newFood.category_id || !newFood.image) {
+                toast.error("All fields are required!",{containerId : "when-error"});
                 return;
             }
 
@@ -89,7 +90,7 @@ const Products = () => {
             });
 
             if (response.status === 201 || response.status === 200) {
-                toast.success("Product added successfully!");
+                toast.success("Food created successfully!",{containerId : "when-success"}); 
                 document.getElementById("add_new_product").close();
                 // Reset newFood state
                 setNewFood({
@@ -107,16 +108,16 @@ const Products = () => {
             }
         } catch (error) {
             console.log(error);
-            toast.error("Failed to add product. Check the form data!");
+            toast.error("Failed to add product. Check the form data!",{containerId : "when-error"});
         }
     };
 
     const editFood = async () => {
         try {
-            if (!foodToEdit.name || !foodToEdit.description || !foodToEdit.price || !foodToEdit.category_id) {
-                toast.error("All fields are required!");
-                return;
-            }
+            // if (!foodToEdit.name || !foodToEdit.description || !foodToEdit.price || !foodToEdit.category_id) {
+            //     toast.error("All fields are required!");
+            //     return;
+            // }
 
             const formData = new FormData();
             formData.append("name", foodToEdit.name);
@@ -172,13 +173,24 @@ const Products = () => {
             });
             // await fetchData();
             setFoods(foods.filter(food => food.id !== id));
-            toast.success("Product deleted successfully!");
+            toast.success("Product deleted successfully!",{containerId: "when-success"});
         } catch (error) {
             console.error(error);
             toast.error("Failed to delete product.");
         }
     };
 
+    const handleCloseModal = () => {
+        document.getElementById("add_new_product").close();
+        setNewFood({ 
+            name: "", 
+            description: "", 
+            price: "", 
+            category_id: "", 
+            image: null 
+        });  // Reset state when modal closes
+    };
+    
     // search function
     const filteredFoods = foods.filter((food) =>
         food.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -288,11 +300,14 @@ const Products = () => {
                     </div>
                 </form>
                 <div className="modal-action">
-                    <button className="btn mx-2" onClick={() => document.getElementById("add_new_product").close()}>Close</button>
+                    <ToastContainer containerId="when-error" autoClose={2000} />
+                    <button className="btn mx-2" onClick={handleCloseModal}>Close</button>
                     <button className="btn btn-warning" onClick={addFood} type="submit">Save</button>
                 </div>
             </div>
             </dialog>
+            
+            <ToastContainer containerId="when-success" autoClose={2000} />
 
             {/* edit product dialog */}
             <dialog  id="edit_product" className="modal">
