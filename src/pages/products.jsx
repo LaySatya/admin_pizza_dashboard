@@ -134,7 +134,7 @@ const Products = () => {
             });
 
             if (response.status === 200) {
-                toast.success("Product updated successfully!");
+                toast.success("Product updated successfully!",{containerId : "when-success"});
                 document.getElementById("edit_product").close();
                 setFoods(foods.map(food => food.id === foodToEdit.id ? response.data.data : food));
                 setFoodToEdit({
@@ -363,13 +363,15 @@ const Products = () => {
                             type="file" 
                             className="file-input file-input-md" 
                             onChange={e => setFoodToEdit({ ...foodToEdit, image: e.target.files[0] })}
+                        
                         />
                     </div>
-                </form>
+                    <ToastContainer containerId="when-error" autoClose={2000} />
                     <div className="modal-action">
                         <button className="btn mx-2" onClick={() => document.getElementById("edit_product").close()}>Close</button>
-                        <button className="btn btn-warning" onClick={editFood} type="submit">Save</button>
+                        <button className="btn btn-warning" type="submit">Save</button>
                     </div>
+                </form>
             </div>
             </dialog>
             
