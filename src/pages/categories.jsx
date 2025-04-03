@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Edit, Plus, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 
 const Categories = () => {
     const [categories, setCategories] = useState([]);
@@ -8,8 +9,7 @@ const Categories = () => {
     const [error, setError] = useState(null);
     const [newCategory, setNewCategory] = useState(""); // State for new category
     const [editCategory, setEditCategory] = useState({ id: null, name: "" });
-    const [alertMessage, setAlertMessage] = useState(""); // State for alert
-    const [messageStatus, setMessageStatus] = useState(false);
+
     //search category by name
     const [searchTerm, setSearchTerm] = useState("");
 
@@ -44,8 +44,7 @@ const Categories = () => {
     // Function to handle adding a new category
     const addCategory = async () => {
         if (!newCategory.trim()) {
-            setAlertMessage("Category name cannot be empty!");
-            setMessageStatus(false);
+            toast.success("Category created successfully!")
             return;
         }
 
@@ -57,13 +56,11 @@ const Categories = () => {
             // Update the UI with the new category
             setCategories([...categories, response.data.data]);
             setNewCategory(""); // Clear input field
-            setAlertMessage(""); // Clear alert
             document.getElementById("add_new_category").close(); // Close modal
-            setAlertMessage("Category added successfully :) ");
-            setMessageStatus(true);
+            toast.success("Category created successfully!");
         } catch (error) {
             console.error("Error adding category:", error);
-            setAlertMessage("Failed to add category!");
+            toast.error("Error creating category");
         }
     };
 
@@ -71,27 +68,24 @@ const Categories = () => {
         try {
             await axios.delete(`http://127.0.0.1:8000/api/categories/${id}`);
             setCategories(categories.filter(category => category.id !== id));
-            setAlertMessage("Category deleted successfully.");
-            setMessageStatus(true);
+            toast.success("Category deleted successfully!");
         } catch (error) {
-            setAlertMessage("Failed to delete category!");
+           toast.error("An error occure while deleting");
         }
     };
 
     const updateCategory = async () => {
         if (!editCategory.name.trim()) {
-            setAlertMessage("Category name cannot be empty!");
-            setMessageStatus(false);
+            toast.error("An error occure");
             return;
         }
         try {
             const response = await axios.put(`http://127.0.0.1:8000/api/categories/${editCategory.id}`, { name: editCategory.name });
             setCategories(categories.map(category => category.id === editCategory.id ? response.data.data : category));
-            setAlertMessage("Category updated successfully.");
-            setMessageStatus(true);
+            toast.success("Category updated successfully.");
             document.getElementById(`edit_category${editCategory.id}`).close();
         } catch (error) {
-            setAlertMessage("Failed to update category!");
+            toast.error("Fail to update category!");
         }
     };
     // Filter categories based on search term
@@ -101,13 +95,7 @@ const Categories = () => {
 
     return (
         <>
-            {/* Alert Message */}
-            {alertMessage && (
-                <div role="alert" className={messageStatus ? "alert alert-success alert-outline mt-4" : "alert alert-error alert-outline mt-4"}>
-                    <span>{alertMessage}</span>
-                </div>
-            )}
-
+            <ToastContainer  autoClose={2000} />
             <div className="flex justify-between mt-5">
                 <h2 className="text-xl font-bold">📦 Categories</h2>
                 {/* Add category button */}
