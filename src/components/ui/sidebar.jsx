@@ -18,7 +18,9 @@ const Sidebar = ({ onSelect }) => {
     return (
         <div className="w-64 h-screen bg-white md:block hidden">
             <div className="flex justify-center items-center mt-5 mb-5">
-                <img className="h-22" src="https://th.bing.com/th/id/OIP.t_mRg2tyUzuNTIdw_ZkfiwHaFj?rs=1&pid=ImgDetMain" alt="" />
+                <a href="/">
+                    <img className="h-22" src="https://th.bing.com/th/id/OIP.t_mRg2tyUzuNTIdw_ZkfiwHaFj?rs=1&pid=ImgDetMain" alt="" />
+                </a>
             </div>
             <ul className="space-y-1">
                 {menuItems.map((item) => (

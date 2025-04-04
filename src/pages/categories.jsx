@@ -142,7 +142,7 @@ const Categories = () => {
                     <input
                         type="text"
                         placeholder="Search category..."
-                        className="input input-bordered"
+                        // className="input input-bordered"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />

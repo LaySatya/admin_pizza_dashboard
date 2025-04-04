@@ -1,4 +1,5 @@
 import axios from "axios";
+import { User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FaBell } from "react-icons/fa";
 import { MdKeyboardArrowDown } from "react-icons/md";
@@ -57,7 +58,7 @@ const TopBar = () => {
 
   return (
     <div className="w-full bg-white flex justify-between items-center p-2.5 shadow-sm px-6 relative">
-      <h1 className="text-2xl font-semibold">{adminName}</h1>
+      <h1 className="text-xl italic font-semibold flex"><User className="m-0.5 mr-1"/> Hello, {adminName}</h1>
       <div className="flex items-center gap-6">
         {/* Notification Bell */}
         <div className="relative">
