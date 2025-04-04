@@ -33,18 +33,18 @@ const Orders = () => {
 
         const fetchDrivers = async () => {
             try {
-                const response= await axios.get('http://127.0.0.1:8000/api/users/get-users-by-role-name/driver',{
-                    headers:{
-                        Authorization : `Bearer ${token}`,
+                const response = await axios.get('http://127.0.0.1:8000/api/users/get-users-by-role-name/driver', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
                     }
-                    
+
                 });
                 console.log('Drivers response:', response.data);
                 if (Array.isArray(response.data.data)) {
                     setDrivers(response.data.data);
                 } else {
                     console.error("Invalid drivers format", response.data);
-                }                
+                }
             } catch (err) {
                 setError('Failed to fetch drivers');
             }
@@ -115,7 +115,7 @@ const Orders = () => {
                     },
                 }
             );
-            
+
 
             // Ensure backend status is reflected in UI
             setOrders(prevOrders =>
@@ -133,21 +133,21 @@ const Orders = () => {
             setError(err.message);
         }
     };
-    
+
     const handleDriverChange = (orderId, driverId) => {
         setSelectedDrivers((prev) => ({
             ...prev,
             [orderId]: driverId,
         }));
     };
-    
+
     const assignDriver = async (orderId) => {
         const driverId = selectedDrivers[orderId];
         if (!driverId) {
             alert("Please select a driver");
             return;
         }
-    
+
         try {
             const response = await axios.patch(
                 `http://127.0.0.1:8000/api/orders/assign-a-driver/${orderId}`,
@@ -165,12 +165,13 @@ const Orders = () => {
                     order.id === orderId ? { ...order, driver: response.data.driver } : order
                 )
             );
+            console.log(response.data);
         } catch (err) {
             console.error("Failed to assign driver:", err);
             alert("Failed to assign driver");
         }
     };
-    
+
 
     if (loading)
         return (
@@ -232,40 +233,61 @@ const Orders = () => {
                                         <td>{order.quantity}</td>
 
                                         <td>
-                                            
+
                                             <select
                                                 className="select select-bordered select-sm"
                                                 value={order.status}
                                                 onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                                                disabled={order.status == "assigning" || order.status === "delivering" || order.status === "completed"}
+                                                // disabled={order.status == "assigning" || order.status === "delivering" || order.status === "completed"}
                                             >
-                                                {/* <option value="pending">🟡 Pending</option> */}
-                                                <option value="accepted">✅ Accepted</option>
-                                                <option value="declined">❌ Declined</option>
+                                                {
+                                                    order.status === "accepted" ? (
+                                                        <>
+                                                            <option value="{order.status}">✅ Accepted</option>
+                                                            
+                                                        </>
+                                                    ) : order.status === "assigning" ? (
+                                                        <>
+                                                            <option value="assigning">🔄 Assigning</option>
+                                                        </>
+                                                    ) : (
+                                                        <>                                                  
+                                                            <option value="pending">⏳ Pending</option>
+                                                            <option value="accepted">✅ Accepted</option>
+                                                            <option value="declined">❌ Declined</option>
+                                                        </>
+                                                    )
+                                                }
                                                 {/* <option value="assigning">🔄 Assigning</option> */}
                                                 {/* <option value="delivering">🚚 Delivering</option>
                                                 <option value="completed">🎉 Completed</option> */}
                                             </select>
                                         </td>
                                         <td>
-                                        <select
-                                            className="select select-bordered select-sm"
-                                            value={selectedDrivers[order.id] || ""}
-                                            onChange={(e) => handleDriverChange(order.id, e.target.value)}
-                                        >
-                                            <option value="">Select Driver</option>
-                                            {drivers.map((driver) => (
-                                                <option key={driver.id} value={driver.id}>
-                                                    {driver.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <button
-                                            className="btn btn-primary btn-sm ml-2"
-                                            onClick={() => assignDriver(order.id)}
-                                        >
-                                            Assign
-                                        </button>
+                                            <select
+                                                className="select select-bordered select-sm"
+                                                value={selectedDrivers[order.id] || ""}
+                                                onChange={(e) => handleDriverChange(order.id, e.target.value)}
+                                            >
+                                                <option value="">Select Driver</option>
+                                                {/* {
+                                                    order.driver.
+                                                } */}
+                                                    <>
+                                                        <option value="">{}</option>
+                                                    </>
+                                                {drivers.map((driver) => (
+                                                    <option key={driver.id} value={driver.id}>
+                                                        {driver.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <button
+                                                className="btn btn-primary btn-sm ml-2"
+                                                onClick={() => assignDriver(order.id)}
+                                            >
+                                                Assign
+                                            </button>
                                         </td>
 
                                         <td>{order.address?.reference}</td>
