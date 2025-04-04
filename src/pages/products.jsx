@@ -455,10 +455,10 @@ const Products = () => {
                                     <tr key={food.id}>
                                         <th>{food.id}</th>
                                         <td>{food.name}</td>
-                                        {/* <td className="tooltip" data-tip={food.description}>
+                                        <td className="tooltip" data-tip={food.description}>
                                             {food.description.slice(0, 30)}
 
-                                        </td> */}
+                                        </td>
                     
                                         <td>${food.price}</td>
                                         <td>
