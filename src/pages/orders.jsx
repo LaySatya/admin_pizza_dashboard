@@ -1,4 +1,5 @@
 import axios from "axios";
+import { CornerLeftUpIcon, Save, Ticket } from "lucide-react";
 import { useEffect, useState } from "react";
 import { BiDetail } from "react-icons/bi";
 
@@ -33,28 +34,28 @@ const Orders = () => {
 
         const fetchDrivers = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/users/get-users-by-role-name/driver', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
+                const response = await axios.get(
+                    "http://127.0.0.1:8000/api/users/get-users-by-role-name/driver",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
                     }
-
-                });
-                console.log('Drivers response:', response.data);
+                );
+                console.log("Drivers response:", response.data);
                 if (Array.isArray(response.data.data)) {
                     setDrivers(response.data.data);
                 } else {
                     console.error("Invalid drivers format", response.data);
                 }
             } catch (err) {
-                setError('Failed to fetch drivers');
+                setError("Failed to fetch drivers");
             }
         };
 
         fetchOrders();
         fetchDrivers();
     }, []);
-
-
 
     const fetchOrderDetails = async (orderId) => {
         try {
@@ -66,7 +67,7 @@ const Orders = () => {
                     },
                 }
             );
-            console.log("order detail response: ", response.data.data)
+            console.log("order detail response: ", response.data.data);
             setSelectedOrder(response.data.data);
         } catch (err) {
             console.error("Failed to fetch order details:", err);
@@ -99,8 +100,8 @@ const Orders = () => {
 
     const handleStatusChange = async (orderId, status) => {
         // Optimistically update UI first
-        setOrders(prevOrders =>
-            prevOrders.map(order =>
+        setOrders((prevOrders) =>
+            prevOrders.map((order) =>
                 order.id === orderId ? { ...order, status } : order
             )
         );
@@ -116,18 +117,24 @@ const Orders = () => {
                 }
             );
 
-
             // Ensure backend status is reflected in UI
-            setOrders(prevOrders =>
-                prevOrders.map(order =>
-                    order.id === orderId ? { ...order, status: response.data.order.status } : order
+            setOrders((prevOrders) =>
+                prevOrders.map((order) =>
+                    order.id === orderId
+                        ? { ...order, status: response.data.order.status }
+                        : order
                 )
             );
         } catch (err) {
             // Revert to previous status if API fails
-            setOrders(prevOrders =>
-                prevOrders.map(order =>
-                    order.id === orderId ? { ...order, status: prevOrders.find(o => o.id === orderId).status } : order
+            setOrders((prevOrders) =>
+                prevOrders.map((order) =>
+                    order.id === orderId
+                        ? {
+                            ...order,
+                            status: prevOrders.find((o) => o.id === orderId).status,
+                        }
+                        : order
                 )
             );
             setError(err.message);
@@ -160,9 +167,11 @@ const Orders = () => {
             );
             alert("Driver assigned successfully!");
             // Optionally update UI after assigning driver
-            setOrders(prevOrders =>
-                prevOrders.map(order =>
-                    order.id === orderId ? { ...order, driver: response.data.driver } : order
+            setOrders((prevOrders) =>
+                prevOrders.map((order) =>
+                    order.id === orderId
+                        ? { ...order, driver: response.data.driver }
+                        : order
                 )
             );
             console.log(response.data);
@@ -171,7 +180,6 @@ const Orders = () => {
             alert("Failed to assign driver");
         }
     };
-
 
     if (loading)
         return (
@@ -184,16 +192,20 @@ const Orders = () => {
 
     const orderStatus = (status) => {
         switch (status) {
-            case "success":
-                return <div className="badge badge-success">Success</div>;
+            case "accepted":
+                return <div className="badge badge-soft badge-success">Accepted</div>;
             case "pending":
-                return <div className="badge badge-warning">Pending</div>;
-            case "failed":
-                return <div className="badge badge-danger">Failed</div>;
-            case "processing":
-                return <div className="badge badge-info">Processing</div>;
+                return <div className="badge badge-soft badge-warning">Pending</div>;
+            case "declined":
+                return <div className="badge badge-soft badge-danger">Declined</div>;
+            case "assigning":
+                return (
+                    <div className="badge badge-soft badge-info text-white">
+                        Assigning
+                    </div>
+                );
             default:
-                return <div className="badge badge-secondary">Unknown</div>;
+                return <div className="badge badge-soft badge-secondary">Unknown</div>;
         }
     };
 
@@ -203,7 +215,7 @@ const Orders = () => {
                 <h2 className="text-xl font-bold">📦 Orders</h2>
             </div>
 
-            <div className="mt-5">
+            <div className="mt-5 overflow-auto ">
                 <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
                     <table className="table">
                         <thead>
@@ -213,6 +225,7 @@ const Orders = () => {
                                 <th>Customer</th>
                                 <th>Quantity</th>
                                 <th>Status</th>
+                                <th>Set Status</th>
                                 <th>Driver</th>
                                 <th>Address</th>
                                 <th>Created At</th>
@@ -225,57 +238,61 @@ const Orders = () => {
                                     <tr key={order.id}>
                                         <td>{order.order_number}</td>
                                         <td>
-                                            {order.order_details
-                                                .map((item) => item.name)
-                                                .join(", ")}
+                                            {order.order_details.map((item) => item.name).join(", ")}
                                         </td>
                                         <td>{order.customer.name}</td>
                                         <td>{order.quantity}</td>
-
+                                        <td>{orderStatus(order.status)}</td>
                                         <td>
-
                                             <select
-                                                className="select select-bordered select-sm"
+                                                className="select select-bordered select-sm w-32"
                                                 value={order.status}
-                                                onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                                                // disabled={order.status == "assigning" || order.status === "delivering" || order.status === "completed"}
-                                            >
-                                                {
-                                                    order.status === "accepted" ? (
-                                                        <>
-                                                            <option value="{order.status}">✅ Accepted</option>
-                                                            
-                                                        </>
-                                                    ) : order.status === "assigning" ? (
-                                                        <>
-                                                            <option value="assigning">🔄 Assigning</option>
-                                                        </>
-                                                    ) : (
-                                                        <>                                                  
-                                                            <option value="pending">⏳ Pending</option>
-                                                            <option value="accepted">✅ Accepted</option>
-                                                            <option value="declined">❌ Declined</option>
-                                                        </>
-                                                    )
+                                                onChange={(e) =>
+                                                    handleStatusChange(order.id, e.target.value)
                                                 }
+                                            // disabled={order.status == "assigning" || order.status === "delivering" || order.status === "completed"}
+                                            >
+                                                {order.status === "accepted" ? (
+                                                    <>
+                                                        <option value="accepted">✅ Accepted</option>
+                                                    </>
+                                                ) : order.status === "assigning" ? (
+                                                    <>
+                                                        <option value="assigning">🔄 Assigning</option>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <option value="pending">⏳ Pending</option>
+                                                        <option value="accepted">✅ Accepted</option>
+                                                        <option value="declined">❌ Declined</option>
+                                                    </>
+                                                )}
                                                 {/* <option value="assigning">🔄 Assigning</option> */}
                                                 {/* <option value="delivering">🚚 Delivering</option>
                                                 <option value="completed">🎉 Completed</option> */}
                                             </select>
                                         </td>
-                                        <td>
+                                        <td className="flex">
+                                            {
+                                                order.status === "assigning" ? (
+                                                    <p>{order.driver.name}</p>
+                                                ) : (
+                                                    <>
+                                                    
                                             <select
-                                                className="select select-bordered select-sm"
+                                                className="select select-bordered select-sm w-32"
                                                 value={selectedDrivers[order.id] || ""}
-                                                onChange={(e) => handleDriverChange(order.id, e.target.value)}
+                                                onChange={(e) =>
+                                                    handleDriverChange(order.id, e.target.value)
+                                                }
                                             >
                                                 <option value="">Select Driver</option>
                                                 {/* {
                                                     order.driver.
                                                 } */}
-                                                    <>
-                                                        <option value="">{}</option>
-                                                    </>
+                                                {/* <>
+                                                    <option value="">{ }</option>
+                                                </> */}
                                                 {drivers.map((driver) => (
                                                     <option key={driver.id} value={driver.id}>
                                                         {driver.name}
@@ -283,18 +300,19 @@ const Orders = () => {
                                                 ))}
                                             </select>
                                             <button
-                                                className="btn btn-primary btn-sm ml-2"
+                                                className="btn btn-success text-white btn-sm ml-2"
                                                 onClick={() => assignDriver(order.id)}
                                             >
-                                                Assign
+                                                <Save size={16}/>
                                             </button>
+                                                    </>
+                                                )
+                                            }
                                         </td>
 
                                         <td>{order.address?.reference}</td>
                                         <td>
-                                            {new Date(order.created_at).toLocaleDateString(
-                                                "en-US"
-                                            )}
+                                            {new Date(order.created_at).toLocaleDateString("en-US")}
                                         </td>
                                         <td>
                                             <button
@@ -336,8 +354,14 @@ const Orders = () => {
                             <p>Status: {selectedOrder.status}</p>
                             <p>Payment: {selectedOrder.payment_method}</p>
                             <p>Total: ${selectedOrder.total}</p>
-                            <p>Created At: {new Date(selectedOrder.created_at).toLocaleString()}</p>
-                            <p>Updated At: {new Date(selectedOrder.updated_at).toLocaleString()}</p>
+                            <p>
+                                Created At:{" "}
+                                {new Date(selectedOrder.created_at).toLocaleString()}
+                            </p>
+                            <p>
+                                Updated At:{" "}
+                                {new Date(selectedOrder.updated_at).toLocaleString()}
+                            </p>
                             <h4 className="mt-2 font-bold">Food Items:</h4>
                             <ul>
                                 {selectedOrder.order_details.map((item) => (
@@ -350,7 +374,6 @@ const Orders = () => {
                     ) : (
                         <p>Loading order details...</p>
                     )}
-
 
                     <div className="modal-action">
                         <form method="dialog">
