@@ -2,6 +2,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { BiDetail } from "react-icons/bi";
+import { FaClipboardList } from "react-icons/fa6";
+import { GrOrderedList } from "react-icons/gr";
 
 const Orders = () => {
     const [orders, setOrders] = useState([]);
@@ -56,7 +58,7 @@ const Orders = () => {
         fetchOrders();
         fetchDrivers();
     }, []);
-    
+
     const fetchOrderDetails = async (orderId) => {
         try {
             const response = await axios.get(
@@ -74,8 +76,7 @@ const Orders = () => {
         }
     };
 
-
-   
+    // change status
     const handleStatusChange = async (orderId, status) => {
         // Optimistically update UI first
         setOrders((prevOrders) =>
@@ -119,48 +120,13 @@ const Orders = () => {
         }
     };
 
-    // const handleDriverChange = async (orderId, driverId) => {
-    //     setSelectedDrivers((prev) => ({
-    //         ...prev,
-    //         [orderId]: driverId,
-    //     }));
-    
-    //     try {
-    //         const response = await axios.patch(
-    //             `http://127.0.0.1:8000/api/orders/assign-a-driver/${orderId}`,
-    //             { driver_id: driverId },
-    //             {
-    //                 headers: {
-    //                     Authorization: `Bearer ${token}`,
-    //                 },
-    //             }
-    //         );
-    //         // if(response){
-    //             toast.success("Driver has been assigned to this order.");
-    //             setOrders((prevOrders) =>
-    //                 prevOrders.map((order) =>
-    //                     order.id === orderId
-    //                         ? {
-    //                             ...order,
-    //                             driver: response.data.driver || { id: driverId }, // fallback if API doesn't return driver object
-    //                             status: order.status === "accepted" ? "assigning" : order.status
-    //                         }
-    //                         : order
-    //                 )
-    //             );
-    //         // }
-    //         // Update the order's driver and optionally change status to "assigning"
-    //     } catch (err) {
-    //         console.error("Failed to assign driver:", err);
-    //         setError("Failed to assign driver. Please try again.");
-    //     }
-    // };
+    // change driver
     const handleDriverChange = async (orderId, driverId) => {
         setSelectedDrivers((prev) => ({
             ...prev,
             [orderId]: driverId,
         }));
-    
+
         try {
             const response = await axios.patch(
                 `http://127.0.0.1:8000/api/orders/assign-a-driver/${orderId}`,
@@ -171,10 +137,10 @@ const Orders = () => {
                     },
                 }
             );
-    
+
             // Find the selected driver's full object from the drivers list
             const assignedDriver = drivers.find((d) => d.id === parseInt(driverId));
-    
+
             // Update the orders state with the full driver info
             setOrders((prevOrders) =>
                 prevOrders.map((order) =>
@@ -192,15 +158,29 @@ const Orders = () => {
             setError("Failed to assign driver. Please try again.");
         }
     };
-    
-    
+
+    const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState("");
+
+    const filteredOrders = orders.filter((order) => {
+        const matchesStatus = statusFilter ? order.status === statusFilter : true;
+        const matchesSearch =
+            order.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            order.customer.email.toLowerCase().includes(searchTerm.toLowerCase());
+
+        return matchesStatus && matchesSearch;
+    });
 
 
 
     if (loading)
         return (
             <div className="flex justify-center items-center">
+                <span className="loading loading-ring loading-xs"></span>
+                <span className="loading loading-ring loading-sm"></span>
+                <span className="loading loading-ring loading-md"></span>
                 <span className="loading loading-ring loading-lg"></span>
+                <span className="loading loading-ring loading-xl"></span>
             </div>
         );
 
@@ -231,8 +211,33 @@ const Orders = () => {
 
     return (
         <>
-            <div className="flex justify-between mt-5">
-                <h2 className="text-xl font-bold">📦 Orders</h2>
+            <div className="flex justify-between mt-1">
+                <h2 className="text-xl font-bold text-gray-600 flex"><FaClipboardList className="mr-1" size={30} /> Orders</h2>
+                <div className="flex ">
+                    <label htmlFor="" className="m-2">Filter:</label>
+                    <input
+                        type="text"
+                        placeholder="Search customer"
+                        className="input input-bordered w-56 mr-2"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+
+                    <select
+                        className="select select-bordered w-28 opacity-80 cursor-pointer"
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                    >
+                        <option value="">All</option>
+                        <option value="pending">Pending</option>
+                        <option value="accepted">Accepted</option>
+                        <option value="declined">Declined</option>
+                        <option value="assigning">Assigning</option>
+                        <option value="delivering">Delivering</option>
+                        <option value="completed">Completed</option>
+                    </select>
+
+                </div>
             </div>
 
             <div className="mt-5 overflow-auto ">
@@ -253,8 +258,8 @@ const Orders = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {orders.length > 0 ? (
-                                orders.map((order) => (
+                            {filteredOrders.length > 0 ? (
+                                filteredOrders.map((order) => (
                                     <tr key={order.id}>
                                         <td>{order.order_number}</td>
                                         <td>
@@ -285,51 +290,51 @@ const Orders = () => {
                                                         <option value="delivering">🚚 Delivering</option>
                                                         {/* <option value="completed">🎉 Completed</option> */}
                                                     </>
-                                                ) :  order.status === "completed" ?
+                                                ) : order.status === "completed" ?
                                                     (
                                                         <option value="completed">🎉 Completed</option>
-                                                    ):
-                                                (
-                                                    <>
-                                                        <option value="pending">⏳ Pending</option>
-                                                        <option value="accepted">✅ Accepted</option>
-                                                        <option value="declined">❌ Declined</option>
-                                                    </>
-                                                )
+                                                    ) :
+                                                    (
+                                                        <>
+                                                            <option value="pending">⏳ Pending</option>
+                                                            <option value="accepted">✅ Accepted</option>
+                                                            <option value="declined">❌ Declined</option>
+                                                        </>
+                                                    )
                                                 }
-                                             
+
                                             </select>
                                         </td>
                                         <td className="flex">
                                             {
                                                 order.status === "accepted" || order.status === "assigning" ? (
-                                                        order.driver === null  ? (
-                                                            <>
+                                                    order.driver === null ? (
+                                                        <>
                                                             <select
                                                                 className="select select-bordered select-sm w-32"
                                                                 value={order.driver}
                                                                 onChange={(e) =>
                                                                     handleDriverChange(order.id, e.target.value)
                                                                 }
-                                                                
+
                                                             >
                                                                 <option>Select Driver</option>
                                                                 {drivers.map((driver) => (
-                                                                /* list all drivers to select */
-                                                                <option key={driver.id} value={driver.id}>
-                                                                    {driver.name}
-                                                                </option>
+                                                                    /* list all drivers to select */
+                                                                    <option key={driver.id} value={driver.id}>
+                                                                        {driver.name}
+                                                                    </option>
                                                                 ))}
-                                                                </select>
-                                                            </>
-                                                        ) : (
-                                                            <div className="badge badge-dash p-3 badge-success">
-                                                                <p>{order.driver.name}</p>
-                                                            </div>
-                                                        )
-                                                       
-                                                       
-                                    
+                                                            </select>
+                                                        </>
+                                                    ) : (
+                                                        <div className="badge badge-dash p-3 badge-success">
+                                                            <p>{order.driver.name}</p>
+                                                        </div>
+                                                    )
+
+
+
                                                 ) : (
                                                     <>
                                                         <div className="badge badge-soft p-2 badge-error">
