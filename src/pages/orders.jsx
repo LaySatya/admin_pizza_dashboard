@@ -307,7 +307,7 @@ const Orders = () => {
                                         </td>
                                         <td className="flex">
                                             {
-                                                order.status === "accepted" || order.status === "assigning" ? (
+                                                order.status === "accepted" || order.status === "assigning" || order.status === "delivering" || order.status === "completed" ? (
                                                     order.driver === null ? (
                                                         <>
                                                             <select
