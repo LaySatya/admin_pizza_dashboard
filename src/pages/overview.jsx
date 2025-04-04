@@ -103,10 +103,10 @@ const Dashboard = () => {
         if (error) return <p>Error: {error}</p>;
     return (
         <>
-                <h2 className="text-xl font-bold mb-4 text-gray-600 flex"><GrDashboard className="mr-1.5" size={30}/> Dashboard Page</h2>
+                <h2 className="text-xl font-bold mb-4 flex"><GrDashboard className="mr-1.5" size={30}/> Dashboard Page</h2>
             <div className="h-96 scrollBar">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div className="card bg-base-100 card-sm shadow-sm">
+                    <div className="card bg-base-100 card-sm shadow-sm border border-warning">
                         <div className="card-body">
                             <h2 className="card-title text-2xl">{amountUsers.length}</h2>
                             <div className="flex justify-between">
@@ -120,7 +120,7 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="card bg-base-100 card-sm shadow-sm">
+                    <div className="card bg-base-100 card-sm shadow-sm border border-warning">
                         <div className="card-body">
                             <h2 className="card-title text-2xl">$200</h2>
                             <div className="flex justify-between">
@@ -134,7 +134,7 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="card bg-base-100 card-sm shadow-sm">
+                    <div className="card bg-base-100 card-sm shadow-sm border border-warning">
                         <div className="card-body">
                             <h2 className="card-title text-2xl">{amountOrders}</h2>
                             <div className="flex justify-between">
@@ -148,7 +148,7 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="card bg-base-100 card-sm shadow-sm">
+                    <div className="card bg-base-100 card-sm shadow-sm border border-warning">
                         <div className="card-body">
                             <h2 className="card-title text-2xl">{amountFoods.length}</h2>
                             <div className="flex justify-between">
@@ -162,7 +162,7 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="card bg-base-100 card-sm shadow-sm">
+                    <div className="card bg-base-100 card-sm shadow-sm border border-warning">
                         <div className="card-body">
                             <h2 className="card-title text-2xl">{amountCategories.length}</h2>
                             <div className="flex justify-between">
@@ -176,7 +176,7 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    {/* <div className="card bg-base-100 card-sm shadow-sm">
+                    {/* <div className="card bg-base-100 card-sm shadow-sm border border-warning">
                         <div className="card-body">
                             <h2 className="card-title text-2xl">200</h2>
                             <div className="flex justify-between">

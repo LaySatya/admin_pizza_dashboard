@@ -98,7 +98,7 @@ const Categories = () => {
         <>
             <ToastContainer autoClose={2000} />
             <div className="flex justify-between mt-1">
-                <h2 className="text-xl text-gray-600 font-bold flex"> <BiCategoryAlt className="mr-1" size={30} /> Categories</h2>
+                <h2 className="text-xl font-bold flex"> <BiCategoryAlt className="mr-1" size={30} /> Categories</h2>
                 {/* Add category button */}
                 <button
                     className="btn bg-amber-200 text-white rounded-md"
@@ -119,7 +119,7 @@ const Categories = () => {
                                     value={newCategory}
                                     onChange={(e) => setNewCategory(e.target.value)}
                                 />
-                                <span className="text-black">Category name</span>
+                                <span className="">Category name</span>
                             </label>
                         </div>
                         <div className="modal-action">
@@ -220,7 +220,7 @@ const Categories = () => {
                                                                     value={editCategory.name}
                                                                     onChange={(e) => setEditCategory({ ...editCategory, name: e.target.value })}
                                                                 />
-                                                                <span className="text-black">Category name</span>
+                                                                <span className="">Category name</span>
                                                             </label>
                                                         </div>
                                                         <div className="modal-action">

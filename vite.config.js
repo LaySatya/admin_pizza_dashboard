@@ -4,4 +4,7 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [tailwindcss(), react()],
+  daisyui: {
+    themes: ["light", "dark"],
+  }
 });

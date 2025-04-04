@@ -212,7 +212,7 @@ const Orders = () => {
     return (
         <>
             <div className="flex justify-between mt-1">
-                <h2 className="text-xl font-bold text-gray-600 flex"><FaClipboardList className="mr-1" size={30} /> Orders</h2>
+                <h2 className="text-xl font-bold flex"><FaClipboardList className="mr-1" size={30} /> Orders</h2>
                 <div className="flex ">
                     <label htmlFor="" className="m-2">Filter:</label>
                     <input

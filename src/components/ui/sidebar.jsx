@@ -16,7 +16,7 @@ const Sidebar = ({ onSelect }) => {
     const [active, setActive] = useState("overview");
 
     return (
-        <div className="w-64 h-screen bg-white md:block hidden">
+        <div className="w-64 h-screen md:block hidden shadow-sm">
             <div className="flex justify-center items-center mt-5 mb-5">
                 <a href="/">
                     <img className="h-22" src="https://th.bing.com/th/id/OIP.t_mRg2tyUzuNTIdw_ZkfiwHaFj?rs=1&pid=ImgDetMain" alt="" />
@@ -30,10 +30,10 @@ const Sidebar = ({ onSelect }) => {
                             setActive(item.id);
                             onSelect(item.id);
                         }}
-                        className={`flex justify-between items-center cursor-pointer hover:bg-slate-100 h-14 ${
+                        className={`flex justify-between items-center cursor-pointer h-14 ${
                             active === item.id
-                                ? "text-yellow-500 font-semibold bg-yellow-50"
-                                : "text-gray-700"
+                                ? "text-yellow-500 font-semibold dark:bg-slate-700"
+                                : "dark:text-white"
                         }`}
                     >
                         <p className="pl-6 flex items-center gap-3">

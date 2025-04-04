@@ -216,7 +216,7 @@ const Products = () => {
     return (
         <>
             <div className="flex justify-between">
-                <h2 className="text-xl font-bold flex text-gray-600"> <AiFillProduct className="mr-1" size={30} /> Products</h2>
+                <h2 className="text-xl font-bold flex"> <AiFillProduct className="mr-1" size={30} /> Products</h2>
                 <button
                     className="btn bg-amber-200 text-white rounded-md"
                     onClick={() => document.getElementById("add_new_product").showModal()}
@@ -260,7 +260,7 @@ const Products = () => {
                                     value={newFood.name}
                                     onChange={e => setNewFood({ ...newFood, name: e.target.value })}
                                 />
-                                <span className="text-black">Product name</span>
+                                <span className="">Product name</span>
                             </label>
                         </div>
                         <div className="mt-5">
@@ -272,7 +272,7 @@ const Products = () => {
                                     value={newFood.description}
                                     onChange={e => setNewFood({ ...newFood, description: e.target.value })}
                                 />
-                                <span className="text-black">Description</span>
+                                <span className="">Description</span>
                             </label>
                         </div>
                         <div className="mt-5">
@@ -284,7 +284,7 @@ const Products = () => {
                                     value={newFood.price}
                                     onChange={e => setNewFood({ ...newFood, price: e.target.value })}
                                 />
-                                <span className="text-black">Price</span>
+                                <span className="">Price</span>
                             </label>
                         </div>
                         <div className="mt-5">
@@ -301,7 +301,7 @@ const Products = () => {
                                         </option>
                                     ))}
                                 </select>
-                                <span className="text-black">Category</span>
+                                <span className="">Category</span>
                             </label>
                         </div>
                         <div className="mt-5">
@@ -311,7 +311,7 @@ const Products = () => {
                                     className="file-input file-input-md"
                                     onChange={e => setNewFood({ ...newFood, image: e.target.files[0] })}
                                 />
-                                <span className="text-black">Product Image</span>
+                                <span className="">Product Image</span>
                             </label>
                         </div>
                     </form>
@@ -342,7 +342,7 @@ const Products = () => {
                                     value={foodToEdit.name}
                                     onChange={(e) => setFoodToEdit({ ...foodToEdit, name: e.target.value })}
                                 />
-                                <span className="text-black">Product name</span>
+                                <span className="">Product name</span>
                             </label>
                         </div>
                         <div className="mt-5">
@@ -354,7 +354,7 @@ const Products = () => {
                                     value={foodToEdit.description}
                                     onChange={(e) => setFoodToEdit({ ...foodToEdit, description: e.target.value })}
                                 />
-                                <span className="text-black">Description</span>
+                                <span className="">Description</span>
                             </label>
                         </div>
                         <div className="mt-5">
@@ -366,7 +366,7 @@ const Products = () => {
                                     value={foodToEdit.price}
                                     onChange={(e) => setFoodToEdit({ ...foodToEdit, price: e.target.value })}
                                 />
-                                <span className="text-black">Price</span>
+                                <span className="">Price</span>
                             </label>
                         </div>
                         <div className="mt-5">
@@ -383,7 +383,7 @@ const Products = () => {
                                         </option>
                                     ))}
                                 </select>
-                                <span className="text-black">Category</span>
+                                <span className="">Category</span>
                             </label>
                         </div>
                         <div className="mt-5">
@@ -394,7 +394,7 @@ const Products = () => {
                                     onChange={e => setFoodToEdit({ ...foodToEdit, image: e.target.files[0] })}
 
                                 />
-                                <span className="text-black">Product Image</span>
+                                <span className="">Product Image</span>
                             </label>
                         </div>
                         <ToastContainer containerId="when-error" autoClose={2000} />
