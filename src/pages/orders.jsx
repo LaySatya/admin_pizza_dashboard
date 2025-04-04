@@ -1,6 +1,6 @@
 import axios from "axios";
-import { CornerLeftUpIcon, Save, Ticket } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { BiDetail } from "react-icons/bi";
 
 const Orders = () => {
@@ -56,7 +56,7 @@ const Orders = () => {
         fetchOrders();
         fetchDrivers();
     }, []);
-
+    
     const fetchOrderDetails = async (orderId) => {
         try {
             const response = await axios.get(
@@ -74,30 +74,8 @@ const Orders = () => {
         }
     };
 
-    // Function to handle the accept/decline action
 
-    // const handleStatusChange = async (orderId, status) => {
-    //     try {
-    //         const response = await axios.patch(
-    //             `http://127.0.0.1:8000/api/orders/accept-or-declined/${orderId}`,
-    //             { status },
-    //             {
-    //                 headers: {
-    //                     Authorization: `Bearer ${token}`,
-    //                 },
-    //             }
-    //         );
-    //         // Update the local state with the new order status
-    //         setOrders(prevOrders =>
-    //             prevOrders.map(order =>
-    //                 order.id === orderId ? { ...order, status: response.data.order.status } : order
-    //             )
-    //         );
-    //     } catch (err) {
-    //         setError(err.message);
-    //     }
-    // };
-
+   
     const handleStatusChange = async (orderId, status) => {
         // Optimistically update UI first
         setOrders((prevOrders) =>
@@ -141,20 +119,48 @@ const Orders = () => {
         }
     };
 
-    const handleDriverChange = (orderId, driverId) => {
+    // const handleDriverChange = async (orderId, driverId) => {
+    //     setSelectedDrivers((prev) => ({
+    //         ...prev,
+    //         [orderId]: driverId,
+    //     }));
+    
+    //     try {
+    //         const response = await axios.patch(
+    //             `http://127.0.0.1:8000/api/orders/assign-a-driver/${orderId}`,
+    //             { driver_id: driverId },
+    //             {
+    //                 headers: {
+    //                     Authorization: `Bearer ${token}`,
+    //                 },
+    //             }
+    //         );
+    //         // if(response){
+    //             toast.success("Driver has been assigned to this order.");
+    //             setOrders((prevOrders) =>
+    //                 prevOrders.map((order) =>
+    //                     order.id === orderId
+    //                         ? {
+    //                             ...order,
+    //                             driver: response.data.driver || { id: driverId }, // fallback if API doesn't return driver object
+    //                             status: order.status === "accepted" ? "assigning" : order.status
+    //                         }
+    //                         : order
+    //                 )
+    //             );
+    //         // }
+    //         // Update the order's driver and optionally change status to "assigning"
+    //     } catch (err) {
+    //         console.error("Failed to assign driver:", err);
+    //         setError("Failed to assign driver. Please try again.");
+    //     }
+    // };
+    const handleDriverChange = async (orderId, driverId) => {
         setSelectedDrivers((prev) => ({
             ...prev,
             [orderId]: driverId,
         }));
-    };
-
-    const assignDriver = async (orderId) => {
-        const driverId = selectedDrivers[orderId];
-        if (!driverId) {
-            alert("Please select a driver");
-            return;
-        }
-
+    
         try {
             const response = await axios.patch(
                 `http://127.0.0.1:8000/api/orders/assign-a-driver/${orderId}`,
@@ -165,21 +171,31 @@ const Orders = () => {
                     },
                 }
             );
-            alert("Driver assigned successfully!");
-            // Optionally update UI after assigning driver
+    
+            // Find the selected driver's full object from the drivers list
+            const assignedDriver = drivers.find((d) => d.id === parseInt(driverId));
+    
+            // Update the orders state with the full driver info
             setOrders((prevOrders) =>
                 prevOrders.map((order) =>
                     order.id === orderId
-                        ? { ...order, driver: response.data.driver }
+                        ? {
+                            ...order,
+                            driver: assignedDriver || { id: driverId }, // fallback if not found
+                            status: order.status === "accepted" ? "assigning" : order.status
+                        }
                         : order
                 )
             );
-            console.log(response.data);
         } catch (err) {
             console.error("Failed to assign driver:", err);
-            alert("Failed to assign driver");
+            setError("Failed to assign driver. Please try again.");
         }
     };
+    
+    
+
+
 
     if (loading)
         return (
@@ -204,6 +220,10 @@ const Orders = () => {
                         Assigning
                     </div>
                 );
+            case "delivering":
+                return <div className="badge badge-soft badge-primary">Delevering</div>;
+            case "completed":
+                return <div className="badge badge-soft badge-success">Completed</div>;
             default:
                 return <div className="badge badge-soft badge-secondary">Unknown</div>;
         }
@@ -260,51 +280,61 @@ const Orders = () => {
                                                     <>
                                                         <option value="assigning">🔄 Assigning</option>
                                                     </>
-                                                ) : (
+                                                ) : order.status === "delivering" ? (
+                                                    <>
+                                                        <option value="delivering">🚚 Delivering</option>
+                                                        {/* <option value="completed">🎉 Completed</option> */}
+                                                    </>
+                                                ) :  order.status === "completed" ?
+                                                    (
+                                                        <option value="completed">🎉 Completed</option>
+                                                    ):
+                                                (
                                                     <>
                                                         <option value="pending">⏳ Pending</option>
                                                         <option value="accepted">✅ Accepted</option>
                                                         <option value="declined">❌ Declined</option>
                                                     </>
-                                                )}
-                                                {/* <option value="assigning">🔄 Assigning</option> */}
-                                                {/* <option value="delivering">🚚 Delivering</option>
-                                                <option value="completed">🎉 Completed</option> */}
+                                                )
+                                                }
+                                             
                                             </select>
                                         </td>
                                         <td className="flex">
                                             {
-                                                order.status === "assigning" ? (
-                                                    <p>{order.driver.name}</p>
+                                                order.status === "accepted" || order.status === "assigning" ? (
+                                                        order.driver === null  ? (
+                                                            <>
+                                                            <select
+                                                                className="select select-bordered select-sm w-32"
+                                                                value={order.driver}
+                                                                onChange={(e) =>
+                                                                    handleDriverChange(order.id, e.target.value)
+                                                                }
+                                                                
+                                                            >
+                                                                <option>Select Driver</option>
+                                                                {drivers.map((driver) => (
+                                                                /* list all drivers to select */
+                                                                <option key={driver.id} value={driver.id}>
+                                                                    {driver.name}
+                                                                </option>
+                                                                ))}
+                                                                </select>
+                                                            </>
+                                                        ) : (
+                                                            <div className="badge badge-dash p-3 badge-success">
+                                                                <p>{order.driver.name}</p>
+                                                            </div>
+                                                        )
+                                                       
+                                                       
+                                    
                                                 ) : (
                                                     <>
-                                                    
-                                            <select
-                                                className="select select-bordered select-sm w-32"
-                                                value={selectedDrivers[order.id] || ""}
-                                                onChange={(e) =>
-                                                    handleDriverChange(order.id, e.target.value)
-                                                }
-                                            >
-                                                <option value="">Select Driver</option>
-                                                {/* {
-                                                    order.driver.
-                                                } */}
-                                                {/* <>
-                                                    <option value="">{ }</option>
-                                                </> */}
-                                                {drivers.map((driver) => (
-                                                    <option key={driver.id} value={driver.id}>
-                                                        {driver.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            <button
-                                                className="btn btn-success text-white btn-sm ml-2"
-                                                onClick={() => assignDriver(order.id)}
-                                            >
-                                                <Save size={16}/>
-                                            </button>
+                                                        <div className="badge badge-soft p-2 badge-error">
+                                                            <p className="text-nowrap">No driver</p>
+                                                        </div>
                                                     </>
                                                 )
                                             }
