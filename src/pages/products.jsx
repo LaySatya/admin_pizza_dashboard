@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Edit, Plus, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
+import { AiFillProduct } from "react-icons/ai";
 import { ToastContainer, toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css"; // Import CSS
 
@@ -71,7 +72,7 @@ const Products = () => {
     const addFood = async () => {
         try {
             if (!newFood.name || !newFood.description || !newFood.price || !newFood.category_id || !newFood.image) {
-                toast.error("All fields are required!",{containerId : "when-error"});
+                toast.error("All fields are required!", { containerId: "when-error" });
                 return;
             }
 
@@ -90,7 +91,7 @@ const Products = () => {
             });
 
             if (response.status === 201 || response.status === 200) {
-                toast.success("Food created successfully!",{containerId : "when-success"}); 
+                toast.success("Food created successfully!", { containerId: "when-success" });
                 document.getElementById("add_new_product").close();
                 // Reset newFood state
                 setNewFood({
@@ -108,7 +109,7 @@ const Products = () => {
             }
         } catch (error) {
             console.log(error);
-            toast.error("Failed to add product. Check the form data!",{containerId : "when-error"});
+            toast.error("Failed to add product. Check the form data!", { containerId: "when-error" });
         }
     };
 
@@ -134,7 +135,7 @@ const Products = () => {
             });
 
             if (response.status === 200) {
-                toast.success("Product updated successfully!",{containerId : "when-success"});
+                toast.success("Product updated successfully!", { containerId: "when-success" });
                 document.getElementById("edit_product").close();
                 setFoods(foods.map(food => food.id === foodToEdit.id ? response.data.data : food));
                 setFoodToEdit({
@@ -173,7 +174,7 @@ const Products = () => {
             });
             // await fetchData();
             setFoods(foods.filter(food => food.id !== id));
-            toast.success("Product deleted successfully!",{containerId: "when-success"});
+            toast.success("Product deleted successfully!", { containerId: "when-success" });
         } catch (error) {
             console.error(error);
             toast.error("Failed to delete product.");
@@ -182,15 +183,15 @@ const Products = () => {
 
     const handleCloseModal = () => {
         document.getElementById("add_new_product").close();
-        setNewFood({ 
-            name: "", 
-            description: "", 
-            price: "", 
-            category_id: "", 
-            image: null 
+        setNewFood({
+            name: "",
+            description: "",
+            price: "",
+            category_id: "",
+            image: null
         });  // Reset state when modal closes
     };
-    
+
     // search function
     const filteredFoods = foods.filter((food) =>
         food.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -215,7 +216,7 @@ const Products = () => {
     return (
         <>
             <div className="flex justify-between">
-                <h2 className="text-xl font-bold">📦Products</h2>
+                <h2 className="text-xl font-bold flex text-gray-600"> <AiFillProduct className="mr-1" size={30} /> Products</h2>
                 <button
                     className="btn bg-amber-200 text-white rounded-md"
                     onClick={() => document.getElementById("add_new_product").showModal()}
@@ -223,7 +224,7 @@ const Products = () => {
                     New <Plus />
                 </button>
             </div>
-            
+
             {/* search box */}
             <div className="mt-5">
                 <label className="input">
@@ -240,171 +241,201 @@ const Products = () => {
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </label>
-            </div>    
+            </div>
 
             {/* add new product */}
             <dialog id="add_new_product" className="modal">
-            <div className="modal-box">
-                <h3 className="font-bold text-lg">Add Product</h3>
-                <form onSubmit={(e) => {
-                    e.preventDefault();
-                    addFood();
-                }}>
-                    <div className="mt-5">
-                        <input
-                            type="text"
-                            placeholder="Product name"
-                            className="input input-md w-full"
-                            value={newFood.name}
-                            onChange={e => setNewFood({ ...newFood, name: e.target.value })}
-                        />
+                <div className="modal-box">
+                    <h3 className="font-bold text-lg">Add Product</h3>
+                    <form onSubmit={(e) => {
+                        e.preventDefault();
+                        addFood();
+                    }}>
+                        <div className="mt-5">
+                            <label className="floating-label">
+                                <input
+                                    type="text"
+                                    placeholder="Product name"
+                                    className="input input-md w-full"
+                                    value={newFood.name}
+                                    onChange={e => setNewFood({ ...newFood, name: e.target.value })}
+                                />
+                                <span className="text-black">Product name</span>
+                            </label>
+                        </div>
+                        <div className="mt-5">
+                            <label className="floating-label">
+                                <input
+                                    type="text"
+                                    placeholder="Description"
+                                    className="input input-md w-full"
+                                    value={newFood.description}
+                                    onChange={e => setNewFood({ ...newFood, description: e.target.value })}
+                                />
+                                <span className="text-black">Description</span>
+                            </label>
+                        </div>
+                        <div className="mt-5">
+                            <label className="floating-label">
+                                <input
+                                    type="text"
+                                    placeholder="Price"
+                                    className="input input-md w-full"
+                                    value={newFood.price}
+                                    onChange={e => setNewFood({ ...newFood, price: e.target.value })}
+                                />
+                                <span className="text-black">Price</span>
+                            </label>
+                        </div>
+                        <div className="mt-5">
+                            <label className="floating-label">
+                                <select
+                                    className="select select-md w-full"
+                                    value={newFood.category_id}
+                                    onChange={e => setNewFood({ ...newFood, category_id: e.target.value })}
+                                >
+                                    <option disabled>Choose category</option>
+                                    {categories.map(category => (
+                                        <option key={category.id} value={category.id}>
+                                            {category.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <span className="text-black">Category</span>
+                            </label>
+                        </div>
+                        <div className="mt-5">
+                            <label className="floating-label">
+                                <input
+                                    type="file"
+                                    className="file-input file-input-md"
+                                    onChange={e => setNewFood({ ...newFood, image: e.target.files[0] })}
+                                />
+                                <span className="text-black">Product Image</span>
+                            </label>
+                        </div>
+                    </form>
+                    <div className="modal-action">
+                        <ToastContainer containerId="when-error" autoClose={2000} />
+                        <button className="btn mx-2" onClick={handleCloseModal}>Close</button>
+                        <button className="btn btn-warning" onClick={addFood} type="submit">Save</button>
                     </div>
-                    <div className="mt-5">
-                        <input
-                            type="text"
-                            placeholder="Description"
-                            className="input input-md w-full"
-                            value={newFood.description}
-                            onChange={e => setNewFood({ ...newFood, description: e.target.value })}
-                        />
-                    </div>
-                    <div className="mt-5">
-                        <input
-                            type="text"
-                            placeholder="Price"
-                            className="input input-md w-full"
-                            value={newFood.price}
-                            onChange={e => setNewFood({ ...newFood, price: e.target.value })}
-                        />
-                    </div>
-                    <div className="mt-5">
-                        <select
-                            className="select select-md w-full"
-                            value={newFood.category_id}
-                            onChange={e => setNewFood({ ...newFood, category_id: e.target.value })}
-                        >
-                            <option disabled>Choose category</option>
-                            {categories.map(category => (
-                                <option key={category.id} value={category.id}>
-                                    {category.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="mt-5">
-                        <input
-                            type="file"
-                            className="file-input file-input-md"
-                            onChange={e => setNewFood({ ...newFood, image: e.target.files[0] })}
-                        />
-                    </div>
-                </form>
-                <div className="modal-action">
-                    <ToastContainer containerId="when-error" autoClose={2000} />
-                    <button className="btn mx-2" onClick={handleCloseModal}>Close</button>
-                    <button className="btn btn-warning" onClick={addFood} type="submit">Save</button>
                 </div>
-            </div>
             </dialog>
-            
+
             <ToastContainer containerId="when-success" autoClose={2000} />
 
             {/* edit product dialog */}
-            <dialog  id="edit_product" className="modal">
-            <div className="modal-box">
-                <h3 className="font-bold text-lg">Edit Product</h3>
-                <form onSubmit={(e) => {
-                    e.preventDefault();
-                    editFood(); // Trigger the edit function on form submit
-                }}>
-                    <div className="mt-5">
-                        <input
-                            type="text"
-                            placeholder="Product name"
-                            className="input input-md w-full"
-                            value={foodToEdit.name}
-                            onChange={(e) => setFoodToEdit({ ...foodToEdit, name: e.target.value })}
-                        />
-                    </div>
-                    <div className="mt-5">
-                        <input
-                            type="text"
-                            placeholder="Description"
-                            className="input input-md w-full"
-                            value={foodToEdit.description}
-                            onChange={(e) => setFoodToEdit({ ...foodToEdit, description: e.target.value })}
-                        />
-                    </div>
-                    <div className="mt-5">
-                        <input
-                            type="text"
-                            placeholder="Price"
-                            className="input input-md w-full"
-                            value={foodToEdit.price}
-                            onChange={(e) => setFoodToEdit({ ...foodToEdit, price: e.target.value })}
-                        />
-                    </div>
-                    <div className="mt-5">
-                        <select
-                            className="select select-md w-full"
-                            value={foodToEdit.category_id}
-                            onChange={(e) => setFoodToEdit({ ...foodToEdit, category_id: e.target.value })}
-                        >
-                            <option disabled>Choose category</option>
-                            {categories.map(category => (
-                                <option key={category.id} value={category.id}>
-                                    {category.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="mt-5">
-                        <input 
-                            type="file" 
-                            className="file-input file-input-md" 
-                            onChange={e => setFoodToEdit({ ...foodToEdit, image: e.target.files[0] })}
-                        
-                        />
-                    </div>
-                    <ToastContainer containerId="when-error" autoClose={2000} />
-                    <div className="modal-action">
-                        <button className="btn mx-2" onClick={() => document.getElementById("edit_product").close()}>Close</button>
-                        <button className="btn btn-warning" type="submit">Save</button>
-                    </div>
-                </form>
-            </div>
+            <dialog id="edit_product" className="modal">
+                <div className="modal-box">
+                    <h3 className="font-bold text-lg">Edit Product</h3>
+                    <form onSubmit={(e) => {
+                        e.preventDefault();
+                        editFood(); // Trigger the edit function on form submit
+                    }}>
+                        <div className="mt-5">
+                            <label className="floating-label">
+                                <input
+                                    type="text"
+                                    placeholder="Product name"
+                                    className="input input-md w-full"
+                                    value={foodToEdit.name}
+                                    onChange={(e) => setFoodToEdit({ ...foodToEdit, name: e.target.value })}
+                                />
+                                <span className="text-black">Product name</span>
+                            </label>
+                        </div>
+                        <div className="mt-5">
+                            <label className="floating-label">
+                                <input
+                                    type="text"
+                                    placeholder="Description"
+                                    className="input input-md w-full"
+                                    value={foodToEdit.description}
+                                    onChange={(e) => setFoodToEdit({ ...foodToEdit, description: e.target.value })}
+                                />
+                                <span className="text-black">Description</span>
+                            </label>
+                        </div>
+                        <div className="mt-5">
+                            <label className="floating-label">
+                                <input
+                                    type="text"
+                                    placeholder="Price"
+                                    className="input input-md w-full"
+                                    value={foodToEdit.price}
+                                    onChange={(e) => setFoodToEdit({ ...foodToEdit, price: e.target.value })}
+                                />
+                                <span className="text-black">Price</span>
+                            </label>
+                        </div>
+                        <div className="mt-5">
+                            <label className="floating-label">
+                                <select
+                                    className="select select-md w-full"
+                                    value={foodToEdit.category_id}
+                                    onChange={(e) => setFoodToEdit({ ...foodToEdit, category_id: e.target.value })}
+                                >
+                                    <option disabled>Choose category</option>
+                                    {categories.map(category => (
+                                        <option key={category.id} value={category.id}>
+                                            {category.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <span className="text-black">Category</span>
+                            </label>
+                        </div>
+                        <div className="mt-5">
+                            <label className="floating-label">
+                                <input
+                                    type="file"
+                                    className="file-input file-input-md"
+                                    onChange={e => setFoodToEdit({ ...foodToEdit, image: e.target.files[0] })}
+
+                                />
+                                <span className="text-black">Product Image</span>
+                            </label>
+                        </div>
+                        <ToastContainer containerId="when-error" autoClose={2000} />
+                        <div className="modal-action">
+                            <button className="btn mx-2" onClick={() => document.getElementById("edit_product").close()}>Close</button>
+                            <button className="btn btn-warning" type="submit">Save</button>
+                        </div>
+                    </form>
+                </div>
             </dialog>
-            
+
             {/* delete product dialog */}
             <dialog id="delete_product" className="modal">
                 <div className="modal-box">
                     <form method="dialog">
-                    <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-                        ✕
-                    </button>
+                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                            ✕
+                        </button>
                     </form>
                     <h3 className="font-bold text-lg">Delete Product</h3>
                     <p className="py-4 text-[16px]">Are you sure?</p>
                     <div className="modal-action">
-                    <form method="dialog">
-                        <button className="btn">Close</button>
+                        <form method="dialog">
+                            <button className="btn">Close</button>
 
-                        <button
-                        className="btn btn-error mx-1 text-white"
-                        onClick={() => {
-                            deleteFood(foodIdToDelete);
-                            document.getElementById("delete_product").close();
-                        }}
-                        >
-                        <Trash height={17} />
-                        </button>
-                    </form>
+                            <button
+                                className="btn btn-error mx-1 text-white"
+                                onClick={() => {
+                                    deleteFood(foodIdToDelete);
+                                    document.getElementById("delete_product").close();
+                                }}
+                            >
+                                <Trash height={17} />
+                            </button>
+                        </form>
                     </div>
                 </div>
             </dialog>
 
             <div className="mt-5">
-                <div className="overflow-auto rounded-box border border-base-content/5 bg-base-100">
+                <div className="hover:overflow-auto h-96 rounded-box border border-base-content/5 bg-base-100">
                     <table className="table">
                         <thead>
                             <tr>
@@ -417,7 +448,7 @@ const Products = () => {
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                    
+
                         <tbody>
                             {filteredFoods.length > 0 ? (
                                 filteredFoods.map((food) => (
@@ -427,13 +458,13 @@ const Products = () => {
                                         <td>{food.description}</td>
                                         <td>${food.price}</td>
                                         <td>
-                                            {food.image ? (
+                                            {food.image !== null ? (
                                                 <img src={food.image} alt={food.name} className="h-14" />
                                             ) : (
                                                 <img
-                                                className="h-14"
-                                                src="https://th.bing.com/th/id/OIP.HXOh5qUfUbzCGR_lzgMWHQHaHa?rs=1&pid=ImgDetMain"
-                                                alt="Placeholder"
+                                                    className="h-14"
+                                                    src="https://th.bing.com/th/id/OIP.HXOh5qUfUbzCGR_lzgMWHQHaHa?rs=1&pid=ImgDetMain"
+                                                    alt="Placeholder"
                                                 />
                                             )}
                                         </td>
@@ -442,19 +473,19 @@ const Products = () => {
                                         {/* <td>{food.category.name}</td> */}
                                         {/* so now use food.category for testing first. Will fix that error later */}
                                         <td>{food.category_id}</td>
-                                        <td>
-                                            <button 
+                                        <td className="flex">
+                                            <button
                                                 className="btn btn-error mx-1 btn-sm text-white"
                                                 onClick={() => {
                                                     setFoodIdToDelete(food.id);
-                                                        document.getElementById('delete_product').showModal()
-                                                    }
+                                                    document.getElementById('delete_product').showModal()
+                                                }
                                                 }
                                             >
                                                 <Trash height={17} />
-                                            </button>  
-                                            <button 
-                                                className="btn btn-info btn-sm text-white" 
+                                            </button>
+                                            <button
+                                                className="btn btn-info btn-sm text-white"
                                                 onClick={() => handleEditClick(food)}
                                             >
                                                 <Edit height={17} />
