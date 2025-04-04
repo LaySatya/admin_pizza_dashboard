@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Edit, Plus, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
+import { BiCategory, BiCategoryAlt } from "react-icons/bi";
 import { ToastContainer, toast } from "react-toastify";
 
 const Categories = () => {
@@ -96,8 +97,8 @@ const Categories = () => {
     return (
         <>
             <ToastContainer  autoClose={2000} />
-            <div className="flex justify-between mt-5">
-                <h2 className="text-xl font-bold">📦 Categories</h2>
+            <div className="flex justify-between mt-1">
+                <h2 className="text-xl text-gray-600 font-bold flex"> <BiCategoryAlt className="mr-1" size={30}/> Categories</h2>
                 {/* Add category button */}
                 <button
                     className="btn bg-amber-200 text-white rounded-md"
@@ -141,7 +142,7 @@ const Categories = () => {
             </div>
             {/* Categories table */}
             <div className="mt-5">
-                <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
+                <div className="hover:overflow-auto h-96 rounded-box border border-base-content/5 bg-base-100">
                     <table className="table">
                         {/* Table head */}
                         <thead>
