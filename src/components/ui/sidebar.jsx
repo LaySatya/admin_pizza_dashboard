@@ -19,7 +19,7 @@ const Sidebar = ({ onSelect }) => {
         <div className="w-64 h-screen md:block hidden shadow-sm">
             <div className="flex justify-center items-center mt-5 mb-5">
                 <a href="/">
-                    <img className="h-22" src="https://th.bing.com/th/id/OIP.t_mRg2tyUzuNTIdw_ZkfiwHaFj?rs=1&pid=ImgDetMain" alt="" />
+                    <img className="h-32" src="https://png.pngtree.com/png-clipart/20230112/original/pngtree-pizza-logo-png-image_8905868.png" alt="" />
                 </a>
             </div>
             <ul className="space-y-1">

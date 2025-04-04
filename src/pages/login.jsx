@@ -41,34 +41,41 @@ function Login() {
     };
 
     return (
-        <div className='w-full h-screen flex justify-center items-center'>
-            <fieldset className="fieldset w-xs bg-base-200 border border-base-300 p-4 rounded-box">
-                <legend className="fieldset-legend">Login</legend>
+        <div className='w-full h-screen flex justify-center mt-5'>
+            <div>
+                <div>
+                    <a href="/" className='flex justify-center'>
+                        <img className="h-44" src="https://png.pngtree.com/png-clipart/20230112/original/pngtree-pizza-logo-png-image_8905868.png" alt="" />
+                    </a>
+                </div>
+                <fieldset className="fieldset w-xs bg-base-200 dark:text-white border border-base-300 p-4 rounded-box">
+                    <legend className="fieldset-legend">Login</legend>
 
-                {error && <p className="text-red-500 text-[15px]">{error}</p>}
+                    {error && <p className="text-red-500 text-[15px]">{error}</p>}
 
-                <label className="fieldset-label">Email</label>
-                <input 
-                    type="email" 
-                    className="input" 
-                    placeholder="Email"  
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
+                    <label className="fieldset-label">Email</label>
+                    <input 
+                        type="email" 
+                        className="input" 
+                        placeholder="Email"  
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
 
-                <label className="fieldset-label">Password</label>
-                <input 
-                    type="password" 
-                    className="input" 
-                    placeholder="Password"  
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
+                    <label className="fieldset-label">Password</label>
+                    <input 
+                        type="password" 
+                        className="input" 
+                        placeholder="Password"  
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
 
-                <button className="btn btn-warning mt-4 text-amber-100" onClick={handleSubmit}>Login</button>
-            </fieldset>
+                    <button className="btn btn-warning mt-4 text-amber-100" onClick={handleSubmit}>Login</button>
+                </fieldset>
+            </div>
         </div>
     );
 }

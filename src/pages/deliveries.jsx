@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Truck } from "lucide-react";
 import { useEffect, useState } from "react";
 // import NoDataIMG from "./images/no-data.png";
 
@@ -43,7 +44,7 @@ const Deliveries = () => {
 
     return (
         <>
-            <h2 className="text-xl font-bold">📦 Deliveries!</h2>
+            <h2 className="text-xl font-bold flex gap-1"><Truck  className="m-0.5"/> Delivering</h2>
             <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                 {orders.length > 0 ? (
                     orders.map(order => (
@@ -57,11 +58,11 @@ const Deliveries = () => {
                             <div className="card-body">
                                 <h2 className="card-title">
                                     Order #{order.id}
-                                    <div className={`badge ${order.status === "delivering" ? "badge-success" : "badge-secondary"}`}>
+                                    <div className={`badge ${order.status === "delivering" ? "badge-success badge-dash" : "badge-secondary badge-dash"}`}>
                                         {order.status.toUpperCase()}
                                     </div>
                                 </h2>
-                                <p>Customer: {order.customer_name || "Unknown"}</p>
+                                <p>Customer: {order.customer || "Unknown"}</p>
                                 <p>Delivery Address: {order.address}</p>
                                 <div className="card-actions justify-end">
                                     <div className="badge badge-outline">Detail</div>
