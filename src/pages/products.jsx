@@ -455,10 +455,14 @@ const Products = () => {
                                     <tr key={food.id}>
                                         <th>{food.id}</th>
                                         <td>{food.name}</td>
-                                        <td>{food.description}</td>
+                                        {/* <td className="tooltip" data-tip={food.description}>
+                                            {food.description.slice(0, 30)}
+
+                                        </td> */}
+                    
                                         <td>${food.price}</td>
                                         <td>
-                                            {food.image !== null ? (
+                                            {food.image && food.image.startsWith("http://127.0.0.1:8000") ? (
                                                 <img src={food.image} alt={food.name} className="h-14" />
                                             ) : (
                                                 <img
