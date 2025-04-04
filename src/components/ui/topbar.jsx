@@ -56,7 +56,7 @@ const TopBar = () => {
   }, []);
 
   return (
-    <div className="w-full h-16 bg-white flex justify-between items-center shadow shadow-sm px-6 relative">
+    <div className="w-full bg-white flex justify-between items-center p-2.5 shadow-sm px-6 relative">
       <h1 className="text-2xl font-semibold">{adminName}</h1>
       <div className="flex items-center gap-6">
         {/* Notification Bell */}

@@ -3,7 +3,7 @@ import TopBar from "../components/ui/topbar";
 
 const AdminLayout = ({ children, onSelectPage }) => {
     return (
-        <div className="flex">
+        <div className="flex h-screen">
             <Sidebar onSelect={onSelectPage} />
             <div className="flex-1 flex flex-col overflow-hidden">
                 <TopBar />
