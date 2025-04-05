@@ -1,9 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { BiDetail } from "react-icons/bi";
 import { FaClipboardList } from "react-icons/fa6";
-import { GrOrderedList } from "react-icons/gr";
 
 const Orders = () => {
     const [orders, setOrders] = useState([]);
@@ -120,44 +118,55 @@ const Orders = () => {
         }
     };
 
-    // change driver
-    const handleDriverChange = async (orderId, driverId) => {
-        setSelectedDrivers((prev) => ({
+    const [loadingOrders, setLoadingOrders] = useState({}); // Track loading state per order
+
+// change driver
+const handleDriverChange = async (orderId, driverId) => {
+    setSelectedDrivers((prev) => ({
+        ...prev,
+        [orderId]: driverId,
+    }));
+
+    setLoadingOrders((prev) => ({
+        ...prev,
+        [orderId]: true,
+    }));
+
+    try {
+        const response = await axios.patch(
+            `http://127.0.0.1:8000/api/orders/assign-a-driver/${orderId}`,
+            { driver_id: driverId },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        const assignedDriver = drivers.find((d) => d.id === parseInt(driverId));
+
+        setOrders((prevOrders) =>
+            prevOrders.map((order) =>
+                order.id === orderId
+                    ? {
+                        ...order,
+                        driver: assignedDriver || { id: driverId },
+                        status: order.status === "accepted" ? "assigning" : order.status
+                    }
+                    : order
+            )
+        );
+    } catch (err) {
+        console.error("Failed to assign driver:", err);
+        setError("Failed to assign driver. Please try again.");
+    } finally {
+        setLoadingOrders((prev) => ({
             ...prev,
-            [orderId]: driverId,
+            [orderId]: false,
         }));
+    }
+};
 
-        try {
-            const response = await axios.patch(
-                `http://127.0.0.1:8000/api/orders/assign-a-driver/${orderId}`,
-                { driver_id: driverId },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-
-            // Find the selected driver's full object from the drivers list
-            const assignedDriver = drivers.find((d) => d.id === parseInt(driverId));
-
-            // Update the orders state with the full driver info
-            setOrders((prevOrders) =>
-                prevOrders.map((order) =>
-                    order.id === orderId
-                        ? {
-                            ...order,
-                            driver: assignedDriver || { id: driverId }, // fallback if not found
-                            status: order.status === "accepted" ? "assigning" : order.status
-                        }
-                        : order
-                )
-            );
-        } catch (err) {
-            console.error("Failed to assign driver:", err);
-            setError("Failed to assign driver. Please try again.");
-        }
-    };
 
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
@@ -305,45 +314,38 @@ const Orders = () => {
 
                                             </select>
                                         </td>
-                                        <td className="flex">
-                                            {
-                                                order.status === "accepted" || order.status === "assigning" || order.status === "delivering" || order.status === "completed" ? (
-                                                    order.driver === null ? (
-                                                        <>
-                                                            <select
-                                                                className="select select-bordered select-sm w-32"
-                                                                value={order.driver}
-                                                                onChange={(e) =>
-                                                                    handleDriverChange(order.id, e.target.value)
-                                                                }
-
-                                                            >
-                                                                <option>Select Driver</option>
-                                                                {drivers.map((driver) => (
-                                                                    /* list all drivers to select */
-                                                                    <option key={driver.id} value={driver.id}>
-                                                                        {driver.name}
-                                                                    </option>
-                                                                ))}
-                                                            </select>
-                                                        </>
-                                                    ) : (
-                                                        <div className="badge badge-dash p-3 badge-success">
-                                                            <p>{order.driver.name}</p>
-                                                        </div>
-                                                    )
-
-
-
-                                                ) : (
-                                                    <>
-                                                        <div className="badge badge-soft p-2 badge-error">
-                                                            <p className="text-nowrap">No driver</p>
-                                                        </div>
-                                                    </>
-                                                )
-                                            }
-                                        </td>
+                                        <td className="flex items-center">
+  {(order.status === "accepted" || order.status === "assigning" || order.status === "delivering" || order.status === "completed") ? (
+    order.driver === null ? (
+      <>
+        {loadingOrders[order.id] ? (
+          <span className="loading loading-spinner loading-sm ml-2"></span>
+        ) : (
+          <select
+            className="select select-bordered select-sm w-32"
+            value={selectedDrivers[order.id] || ""}
+            onChange={(e) => handleDriverChange(order.id, e.target.value)}
+          >
+            <option value="">Select Driver</option>
+            {drivers.map((driver) => (
+              <option key={driver.id} value={driver.id}>
+                {driver.name}
+              </option>
+            ))}
+          </select>
+        )}
+      </>
+    ) : (
+      <div className="badge badge-dash p-3 badge-success">
+        <p>{order.driver.name}</p>
+      </div>
+    )
+  ) : (
+    <div className="badge badge-soft p-2 badge-error">
+      <p className="text-nowrap">No driver</p>
+    </div>
+  )}
+</td>
 
                                         <td>{order.address?.reference}</td>
                                         <td>
