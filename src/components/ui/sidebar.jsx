@@ -10,7 +10,7 @@ const Sidebar = ({ onSelect }) => {
         { id: "products", name: "Products", icon: <FaBox /> },
         { id: "categories", name: "Categories", icon: <FaLayerGroup /> },
         { id: "users", name: "Users" , icon: <User /> },
-        { id: "deliveries", name: "Deliveries", icon: <FaTruck /> },
+        // { id: "deliveries", name: "Deliveries", icon: <FaTruck /> },
         // { id: "setup", name: "Setup", icon: <FaCogs /> },
     ];
     const [active, setActive] = useState("overview");

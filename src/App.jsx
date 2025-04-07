@@ -33,8 +33,8 @@ function App() {
                 return <Categories />;
             case "users":
                 return <Users />
-            case "deliveries":
-                return <Deliveries />;
+            // case "deliveries":
+            //     return <Deliveries />;
             default:
                 return <NotFound />;
         }

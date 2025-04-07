@@ -54,7 +54,7 @@ const Users = () => {
             notify.error("All fields are required", { containerId: "when-error" });
             return;
         }
-    
+
         if (!emailRegex.test(email)) {
             notify.error("Please enter a valid email address", { containerId: "when-error" });
             return;
@@ -86,7 +86,7 @@ const Users = () => {
             });
             setProfileImg(null);
             document.getElementById('add_new_driver').close();
-             // Refresh users
+            // Refresh users
             fetchData();
         } catch (error) {
             console.error(error);
@@ -105,16 +105,16 @@ const Users = () => {
     if (error) return <p>Error: {error}</p>;
 
     return (
-        <>  
-        {/* / error form add new driver */}
-        <ToastContainer containerId="when-error" autoClose={2000} /> 
+        <>
+            {/* / error form add new driver */}
+            <ToastContainer containerId="when-error" autoClose={2000} />
             <div className="flex justify-between">
                 <h2 className="text-xl font-bold flex pr-1"><Users2 className="m-0.5 mr-1" /> Users</h2>
                 <button
                     className="btn bg-amber-200 text-white rounded-md"
                     onClick={() => document.getElementById("add_new_driver").showModal()}
                 >
-                    New <Plus />
+                    New Driver<Plus />
                 </button>
             </div>
 
@@ -231,6 +231,7 @@ const Users = () => {
                                 <th>Phone</th>
                                 <th>Status</th>
                                 <th>Role</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -248,6 +249,15 @@ const Users = () => {
                                             <span className={`badge ${user.status === "active" ? "badge-success badge-soft" : "badge-error badge-soft"}`}>{user.status}</span>
                                         </td>
                                         <td>{user.role}</td>
+                                        <td>
+                                            <div className="tooltip">
+                                                <div className="tooltip-content">
+                                                    <div className="animate-bounce text-orange-400  text-sm font-black">Change Status</div>
+                                                </div>
+                                                {/* <button className="btn">Hover me</button> */}
+                                            <input type="checkbox" defaultChecked className="toggle toggle-info" />
+                                            </div>
+                                        </td>
                                     </tr>
                                 ))
                             ) : (
